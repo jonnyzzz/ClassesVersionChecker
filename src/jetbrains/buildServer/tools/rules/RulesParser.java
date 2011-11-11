@@ -90,7 +90,7 @@ public class RulesParser {
     int q = path.indexOf('!');
 
     if (q > 0) {
-      return resolvePath(home, path.substring(0, q)) + (path.substring(q).replaceAll("\\\\", "/"));
+      return resolvePath(home, path.substring(0, q)) + (path.substring(q).replaceAll("[\\\\/]+", "/"));
     }
 
     return new File(home, path).getCanonicalPath();

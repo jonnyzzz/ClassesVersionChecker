@@ -6,6 +6,7 @@
       <class name="jetbrains.buildServer.tools.test.RulesParserTest"/>
       <class name="jetbrains.buildServer.tools.test.RulesMatcherTest"/>
       <class name="jetbrains.buildServer.tools.test.ZipFileScanStepTest"/>
+      <class name="jetbrains.buildServer.tools.test.FilesProcessorTest"/>
     </classes>
   </test>
 </suite>

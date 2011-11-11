@@ -17,13 +17,9 @@
 package jetbrains.buildServer.tools;
 
 import jetbrains.buildServer.tools.errors.ErrorsCollection;
-import jetbrains.buildServer.tools.fs.FSScanFile;
 import jetbrains.buildServer.tools.java.JavaCheckSettings;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
-import jetbrains.buildServer.tools.step.ClassFileScanStep;
-import jetbrains.buildServer.tools.step.DirectoryScanStep;
-import jetbrains.buildServer.tools.step.ScanZipStep;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -66,7 +62,9 @@ public class Program {
     }
 
     final ErrorsCollection reporting = new ErrorsCollection(args);
-    processFiles(args.getScanHome(), new JavaCheckSettings(rules), reporting);
+
+    FilesProcessor.processFiles(args.getScanHome(), new JavaCheckSettings(rules), reporting);
+
     rules.assertVisited(reporting);
 
     System.out.println();
@@ -108,49 +106,6 @@ public class Program {
         //NOP
       }
     }
-  }
-
-  public static void processFiles(@NotNull final File scanHome,
-                                  @NotNull final CheckSettings settings,
-                                  @NotNull final ErrorReporting reporting) {
-    final Continuation c = new Continuation() {
-      private final ScanStep[] steps = new ScanStep[]{
-              new ClassFileScanStep(settings, reporting),
-              new ScanZipStep(),
-              new DirectoryScanStep(),
-      };
-
-      private int cnt = 0;
-
-      public void postTask(@NotNull ScanFile file) {
-        if (settings.isDebugMode()) {
-          System.out.println("scanning: " + file.getName());
-        } else {
-          cnt++;
-          if (cnt % 100 == 0) {
-            System.out.print(".");
-          }
-          if (cnt % 4000 == 0) {
-            System.out.println();
-          }
-        }
-
-        if (settings.isPathExcluded(file)) {
-          System.out.print("S");
-          return;
-        }
-
-        for (ScanStep step : steps) {
-          try {
-            step.process(file, this);
-          } catch (Throwable e) {
-            reporting.postError(file, e.toString());
-          }
-        }
-      }
-    };
-
-    c.postTask(new FSScanFile(scanHome));
   }
 
 }

@@ -18,6 +18,7 @@ package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.BaseTestCase;
 import jetbrains.buildServer.tools.Continuation;
+import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
@@ -25,6 +26,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Mockery;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.*;
@@ -39,6 +41,7 @@ public class RulesBaseTestCase extends BaseTestCase {
   protected Mockery m;
   protected Continuation c;
   protected File myHome;
+  protected ErrorReporting rep;
 
 
   @BeforeMethod
@@ -48,6 +51,14 @@ public class RulesBaseTestCase extends BaseTestCase {
     myHome = createTempDir();
     m = new Mockery();
     c = m.mock(Continuation.class);
+    rep = m.mock(ErrorReporting.class);
+  }
+
+  @AfterMethod
+  @Override
+  public void tearDown() {
+    super.tearDown();
+    m.assertIsSatisfied();
   }
 
   protected PathSettings parseConfig(@NotNull final String configText) throws IOException {
@@ -96,23 +107,36 @@ public class RulesBaseTestCase extends BaseTestCase {
 
 
   protected class Expectations extends org.jmock.Expectations {
-    protected BaseMatcher<ScanFile> file(@NotNull final String name) {
-       return new BaseMatcher<ScanFile>() {
-         public boolean matches(Object item) {
-           ScanFile sf = (ScanFile) item;
-           return sf.getName().equals(name);
-         }
+    protected BaseMatcher<ScanFile> file(@NotNull final String path) {
+      final String name = mockFile(path).getName();
+      return new BaseMatcher<ScanFile>() {
+        public boolean matches(Object item) {
+          ScanFile sf = (ScanFile) item;
+          return sf.getName().equals(name);
+        }
 
-         public void describeTo(Description description) {
-           description.appendText("ScanFile{" + name + "}");
-         }
-       };
+        public void describeTo(Description description) {
+          description.appendText("ScanFile{" + name + "}");
+        }
+      };
     }
   }
 
   public void expectFile(@NotNull final String name) {
     m.checking(new Expectations(){{
-      oneOf(c).postTask(with(file(mockFile(name).getName())));
+      oneOf(c).postTask(with(file(name)));
+    }});
+  }
+
+  public void expectCheckError(@NotNull final String name) {
+    m.checking(new Expectations(){{
+      oneOf(rep).postCheckError(with(file(name)), with(any(String.class)));
+    }});
+  }
+
+  public void expectGenericError(@NotNull final String name) {
+    m.checking(new Expectations(){{
+      oneOf(rep).postError(with(file(name)), with(any(String.class)));
     }});
   }
 

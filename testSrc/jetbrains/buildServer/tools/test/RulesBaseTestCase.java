@@ -68,7 +68,15 @@ public class RulesBaseTestCase extends BaseTestCase {
 
   @NotNull
   public ScanFile mockFile(@NotNull final String relPath) {
-    final String path = myHome.getPath() + File.separatorChar + relPath;
+    int s = relPath.indexOf('!');
+    final String path;
+    if (s > 0) {
+      path = new File(myHome.getPath(), relPath.substring(0, s)).getPath() + relPath.substring(s);
+    } else {
+      path = new File(myHome.getPath(), relPath).getPath();
+    }
+
+
     return new ScanFile() {
       @NotNull
       public InputStream openStream() throws IOException {

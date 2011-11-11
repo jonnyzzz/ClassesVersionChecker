@@ -63,4 +63,9 @@ public class FSScanFile implements ScanFile {
     }
     return sb;
   }
+
+  @Override
+  public String toString() {
+    return "FSScanFile{name=" + getName() + "}";
+  }
 }

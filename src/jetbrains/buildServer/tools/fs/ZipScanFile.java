@@ -83,4 +83,9 @@ public class ZipScanFile implements ScanFile {
   public boolean isFile() {
     return !myEntry.isDirectory();
   }
+
+  @Override
+  public String toString() {
+    return "ZipScanFile{name=" + getName() + "}";
+  }
 }

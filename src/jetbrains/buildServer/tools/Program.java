@@ -66,7 +66,7 @@ public class Program {
     }
 
     final ErrorsCollection reporting = new ErrorsCollection(args);
-    processFiles(args.getScanHome(), rules, reporting);
+    processFiles(args.getScanHome(), new JavaCheckSettings(rules), reporting);
     rules.assertVisited(reporting);
 
     System.out.println();
@@ -111,9 +111,8 @@ public class Program {
   }
 
   public static void processFiles(@NotNull final File scanHome,
-                                  @NotNull final PathSettings rules,
+                                  @NotNull final CheckSettings settings,
                                   @NotNull final ErrorReporting reporting) {
-    final JavaCheckSettings settings = new JavaCheckSettings(rules);
     final Continuation c = new Continuation() {
       private final ScanStep[] steps = new ScanStep[]{
               new ClassFileScanStep(settings, reporting),

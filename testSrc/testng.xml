@@ -4,6 +4,7 @@
     <classes>
       <class name="jetbrains.buildServer.tools.test.PathRulesTest"/>
       <class name="jetbrains.buildServer.tools.test.RulesParserTest"/>
+      <class name="jetbrains.buildServer.tools.test.RulesMatcherTest"/>
     </classes>
   </test>
 </suite>

@@ -60,8 +60,6 @@ public class PathSettings {
     return rule.getVersion();
   }
 
-
-
   public boolean validateRules(@NotNull final PrintStream ps) {
     boolean failed = true;
     for (PathRule exclude : getExcludes()) {

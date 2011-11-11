@@ -12,6 +12,8 @@
 ;
 ;  all paths are relative to scan folder
 ;
+;  exclude rules are checked first
+;  longest rule wins
 ;
 ;  have fun
 ;

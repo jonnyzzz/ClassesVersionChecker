@@ -1,1 +1,5 @@
 Classes version checker utility
+
+Usage: java -jar ClassesVersionChecker.jar <baseDirectory> <settingsFile> <reportFile>
+
+See sample-config.txt for settings details.

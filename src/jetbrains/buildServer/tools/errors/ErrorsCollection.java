@@ -109,19 +109,25 @@ public class ErrorsCollection implements ErrorReporting {
     printMap(pw, myShortErrors, "Errors");
   }
 
-  public void createReportFile() {
+  @NotNull
+  public File createReportFile() {
     final File reportFile = myArguments.getReport();
     //noinspection ResultOfMethodCallIgnored
     reportFile.getParentFile().mkdirs();
+    PrintStream pw = null;
     try {
-      final PrintStream pw = new PrintStream(new BufferedOutputStream(new FileOutputStream(reportFile)), true, "utf-8");
+      pw = new PrintStream(new BufferedOutputStream(new FileOutputStream(reportFile)), true, "utf-8");
       dumpShortReport(pw);
 
       printMap(pw, myGenericErrors, "General Errors");
       printMap(pw, myFileToMessage, "Class File Errors");
     } catch (IOException e) {
       System.err.println("Failed to create report file: " + reportFile + ". " + e.getMessage());
+    } finally {
+      if (pw != null) pw.close();
     }
+
+    return reportFile;
   }
 
   private void printMap(@NotNull final PrintStream pw, @NotNull final Map<String, String> map, @NotNull final String title) {

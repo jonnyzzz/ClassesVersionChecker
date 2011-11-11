@@ -76,8 +76,12 @@ public class Program {
     System.out.println();
     System.out.println();
 
-    reporting.createReportFile();
+    final File reportFile = reporting.createReportFile();
     reporting.dumpShortReport(System.out);
+
+    ///publish report as artifact
+    System.out.println(" ##teamcity[publishArtifacts '" + reportFile.getPath() + "=>classVersionChecker-report.zip'] ");
+    System.out.flush();
 
     if (reporting.hasErrors()) {
       System.err.println("There were " + reporting.getNumberOfErrors() + " class version errors detected");

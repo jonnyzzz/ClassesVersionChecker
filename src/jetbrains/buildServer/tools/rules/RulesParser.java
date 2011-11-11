@@ -1,0 +1,83 @@
+package jetbrains.buildServer.tools.rules;
+
+import jetbrains.buildServer.tools.Arguments;
+import jetbrains.buildServer.tools.java.JavaVersion;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Scanner;
+
+/**
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 08.11.11 18:07
+ */
+public class RulesParser {
+  public static PathSettings parseConfig(@NotNull final Arguments argz, @NotNull final Reader rdr) throws IOException {
+    final Collection<PathRule> myExcludes = new ArrayList<PathRule>();
+    final Collection<VersionRule> myVersions = new ArrayList<VersionRule>();
+
+    try {
+      final Scanner sc = new Scanner(rdr);
+      while(sc.hasNextLine()) {
+        final String line = sc.nextLine().trim();
+        if (line.length() == 0 || line.startsWith(";")) {
+          continue;
+        }
+
+        if (line.startsWith("-")) {
+          String path = line.substring(1).trim();
+          if (path.startsWith("=>")) {
+            path = path.substring(2).trim();
+          } else {
+            throw new IOException("Failed to parse - rule: " + line);
+          }
+          myExcludes.add(new PathRule(resolvePath(argz.getScanHome(), path)));
+          continue;
+        }
+
+        boolean parsed = false;
+        for (JavaVersion v : JavaVersion.values()) {
+          final String prefix = v.getShortName();
+          if (!line.startsWith(prefix)) continue;
+
+          String part = line.substring(prefix.length()).trim();
+
+          if (part.startsWith("=>")) {
+            part = part.substring(2).trim();
+          } else {
+            throw new IOException("Failed to parse java rule: " + line);
+          }
+
+          myVersions.add(new VersionRule(resolvePath(argz.getScanHome(), part), v));
+          parsed = true;
+          break;
+        }
+
+        if (parsed) continue;
+
+        throw new IOException("Unexpected string: '" + line + "' in config");
+      }
+    } finally {
+      rdr.close();
+    }
+
+    return new PathSettings(myExcludes, myVersions);
+  }
+
+  private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {
+    path = path.trim();
+    if (path.length() == 0) return home.getPath();
+    int q = path.indexOf('!');
+
+    if (q > 0) {
+      return resolvePath(home, path.substring(0, q)) + (path.substring(q).replaceAll("\\\\", "/"));
+    }
+
+    return new File(home, path).getCanonicalPath();
+  }
+
+}

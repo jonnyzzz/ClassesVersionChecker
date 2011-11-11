@@ -36,10 +36,10 @@ import java.util.concurrent.ExecutionException;
 public class Program {
   public static void main(String[] _args) throws ExecutionException, InterruptedException, IOException {
     System.out.println();
-    System.out.println("Usage: java -jar classVersionChecker.jar <scan path> configFile.txt reportFile");
+    System.out.println("Usage: java -jar classVersionChecker.jar <scan path> configFile.txt");
     System.out.println();
 
-    if (_args.length != 3) {
+    if (_args.length != 2) {
       System.err.println("Invalid arguments. ");
       System.exit(1);
       return;
@@ -51,10 +51,7 @@ public class Program {
     final File config = new File(_args[1]);
     System.out.println("Use configuration from: " + config);
 
-    final File report = new File(_args[2]);
-    System.out.println("Generate report to : " + report);
-
-    final Arguments args = new Arguments(start, config, report);
+    final Arguments args = new Arguments(start, config, new File(System.getProperty("java.io.tmpdir"), "classVersionChecker-report.txt"));
     args.dumpTotalRules(System.out);
 
     processFiles(args);

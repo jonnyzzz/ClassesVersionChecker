@@ -3,7 +3,7 @@
     <extension name="coverage" enabled="false" merge="false" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="jetbrains.buildServer.tools.Program" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="E:\ref\TeamCity.Trunk E:\Work\TeamCity\trunk\buildserver\tools\classVersionChecker\teamcity-checker-rules.txt E:\Work\TeamCity\trunk\buildserver\tools\classVersionChecker\teamcity-report.txt" />
+    <option name="PROGRAM_PARAMETERS" value="E:\ref\TeamCity.Trunk E:\Work\TeamCity\trunk\buildserver\TeamCityBuild\teamcity-checker-rules.txt" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />

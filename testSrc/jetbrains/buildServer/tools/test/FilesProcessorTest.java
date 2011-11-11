@@ -111,7 +111,7 @@ public class FilesProcessorTest extends RulesBaseTestCase {
   }
 
   private byte[] classBytes(int version) {
-    return new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, 0,0, 0, (byte)version, 00,00,0,0,0};
+    return new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, 0, 0, 0, (byte) version, 0, 0, 0, 0, 0};
   }
 
 

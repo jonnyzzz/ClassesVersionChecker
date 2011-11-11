@@ -228,6 +228,33 @@ public class FilesProcessorTest extends RulesBaseTestCase {
     runTest("1.7 => some/useful.zip!file.txt");
   }
 
+  @Test
+  public void test_not_found_file_rule4() throws IOException {
+    expectRuleNotVisited("foo");
+    saveFile("foo/aaa.txt", "qqq".getBytes());
+
+    //there should be some classes to check!
+    runTest("1.4 => foo");
+  }
+
+  @Test
+  public void test_not_found_file_rule5() throws IOException {
+    expectRuleNotVisited("foo.zip");
+    saveFile("foo.zip", zipStream("aaa.ppp", "some.file.zzz"));
+
+    //there should be some classes to check!
+    runTest("1.4 => foo.zip");
+  }
+
+  @Test
+  public void test_no_rule_specified() throws IOException {
+    expectCheckError("some/file.class");
+    saveFile("some/file.class", "aaa".getBytes());
+    saveFile("foo/aaa.class", classBytes(10));
+
+    runTest("1.4 => foo");
+  }
+
   private void writeAllVersionClasses() throws IOException {
     saveFile("51.class", classBytes(51)); //1.7
     saveFile("50.class", classBytes(50)); //1.6

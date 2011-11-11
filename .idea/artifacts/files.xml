@@ -1,6 +1,12 @@
 <component name="ArtifactManager">
   <artifact name="files">
     <output-path>$PROJECT_DIR$/out/artifacts/files</output-path>
+    <properties id="ant-postprocessing">
+      <options enabled="true">
+        <file>file://$PROJECT_DIR$/build/ant.build.xml</file>
+        <target>updateVersion</target>
+      </options>
+    </properties>
     <root id="root">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />

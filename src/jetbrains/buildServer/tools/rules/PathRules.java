@@ -27,11 +27,19 @@ import java.util.*;
 *         Date: 08.11.11 15:42
 */
 public class PathRules<T extends PathRule> {
-  private final List<T> myRules;
+  private final Set<T> myRules;
 
   public PathRules(@NotNull final Collection<T> rules) {
-    myRules = new ArrayList<T>(rules);
-    Collections.sort(myRules, CMP);
+    final TreeSet<T> ts = new TreeSet<T>(MATCH_ORDER);
+    ts.addAll(rules);
+    myRules = Collections.unmodifiableSet(ts);
+  }
+
+  @NotNull
+  public Collection<T> getRules() {
+    Set<T> set = new TreeSet<T>(DUMP_ORDER);
+    set.addAll(myRules);
+    return set;
   }
 
   @Nullable
@@ -46,7 +54,7 @@ public class PathRules<T extends PathRule> {
     return null;
   }
 
-  private final static Comparator<PathRule> CMP = new Comparator<PathRule>() {
+  private final static Comparator<PathRule> MATCH_ORDER = new Comparator<PathRule>() {
     public int compare(PathRule o1, PathRule o2) {
       final String p1 = o1.getPath();
       final String p2 = o2.getPath();
@@ -56,6 +64,15 @@ public class PathRules<T extends PathRule> {
 
       if (s1 < s2) return 1;
       if (s1 > s2) return -1;
+      return p1.compareTo(p2);
+    }
+  };
+
+  private final static Comparator<PathRule> DUMP_ORDER = new Comparator<PathRule>() {
+    public int compare(PathRule o1, PathRule o2) {
+      final String p1 = o1.getPath();
+      final String p2 = o2.getPath();
+
       return p1.compareTo(p2);
     }
   };

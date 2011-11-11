@@ -16,92 +16,81 @@
 
 package jetbrains.buildServer.tools.test;
 
-import jetbrains.buildServer.tools.BaseTestCase;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import jetbrains.buildServer.tools.rules.PathSettings;
-import jetbrains.buildServer.tools.rules.RulesParser;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 11.11.11 15:05
  */
-public class RulesParserTest extends BaseTestCase {
+public class RulesParserTest extends RulesBaseTestCase {
 
   @Test
   public void testResolveRules_include() throws IOException {
-    final File home = createTempDir();
-
-    final PathSettings s = RulesParser.parseConfig(home, new StringReader("1.5 => fff"));
+    final String configText = "1.5 => fff";
+    final PathSettings s = parseConfig(configText);
 
     Assert.assertTrue(s.getExcludes().isEmpty());
     Assert.assertEquals(s.getVersions().size(), 1);
     Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
-    final File base = new File(home, "fff");
+    final File base = new File(myHome, "fff");
     Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath());
     Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
   }
 
+
   @Test
   public void testResolveRules_include_zip() throws IOException {
-    final File home = createTempDir();
-
-    final PathSettings s = RulesParser.parseConfig(home, new StringReader("1.5 => fff.jar!f/a/d/d/g/r"));
+    final PathSettings s = parseConfig("1.5 => fff.jar!f/a/d/d/g/r");
 
     Assert.assertTrue(s.getExcludes().isEmpty());
     Assert.assertEquals(s.getVersions().size(), 1);
     Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
-    final File base = new File(home, "fff.jar");
+    final File base = new File(myHome, "fff.jar");
     Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
     Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_include_zip_normalize() throws IOException {
-    final File home = createTempDir();
-
-    final PathSettings s = RulesParser.parseConfig(home, new StringReader("1.5 => p\\q//f\\//\\\\/fff.jar!f/a/\\d/d\\g/r"));
+    final PathSettings s = parseConfig("1.5 => p\\q//f\\//\\\\/fff.jar!f/a/\\d/d\\g/r");
 
     Assert.assertTrue(s.getExcludes().isEmpty());
     Assert.assertEquals(s.getVersions().size(), 1);
     Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
-    final File base = new File(home, "p/q/f/fff.jar");
+    final File base = new File(myHome, "p/q/f/fff.jar");
     Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
     Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_exclude() throws IOException {
-    final File home = createTempDir();
-
-    final PathSettings s = RulesParser.parseConfig(home, new StringReader("- => fff.jar!f/a/d/d/g/r"));
+    final PathSettings s = parseConfig("- => fff.jar!f/a/d/d/g/r");
 
     Assert.assertTrue(s.getVersions().isEmpty());
     Assert.assertEquals(s.getExcludes().size(), 1);
 
-    final File base = new File(home, "fff.jar");
+    final File base = new File(myHome, "fff.jar");
     Assert.assertEquals(s.getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
     Assert.assertEquals(s.getExcludes().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_exclude_normalize() throws IOException {
-    final File home = createTempDir();
-
-    final PathSettings s = RulesParser.parseConfig(home, new StringReader("- => fff.jar!f/a\\d//d/\\g/r"));
+    final PathSettings s = parseConfig("- => fff.jar!f/a\\d//d/\\g/r");
 
     Assert.assertTrue(s.getVersions().isEmpty());
     Assert.assertEquals(s.getExcludes().size(), 1);
 
-    final File base = new File(home, "fff.jar");
+    final File base = new File(myHome, "fff.jar");
     Assert.assertEquals(s.getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
     Assert.assertEquals(s.getExcludes().iterator().next().getBaseFile(), base);
   }

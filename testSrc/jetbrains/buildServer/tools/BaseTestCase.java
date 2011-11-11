@@ -31,7 +31,7 @@ public class BaseTestCase {
   private TempFiles myTempFiles = new TempFiles();
 
   @BeforeMethod
-  public void setUp() {
+  public void setUp() throws IOException {
     myTempFiles.cleanup();
   }
 

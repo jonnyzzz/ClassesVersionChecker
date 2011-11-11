@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.tools.rules;
 
-import jetbrains.buildServer.tools.Arguments;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +31,8 @@ import java.util.Scanner;
  *         Date: 08.11.11 18:07
  */
 public class RulesParser {
-  public static PathSettings parseConfig(@NotNull final Arguments argz, @NotNull final Reader rdr) throws IOException {
+  @NotNull
+  public static PathSettings parseConfig(@NotNull final File scanHome, @NotNull final Reader rdr) throws IOException {
     final Collection<PathRule> myExcludes = new ArrayList<PathRule>();
     final Collection<VersionRule> myVersions = new ArrayList<VersionRule>();
 
@@ -51,7 +51,7 @@ public class RulesParser {
           } else {
             throw new IOException("Failed to parse - rule: " + line);
           }
-          myExcludes.add(new PathRule(resolvePath(argz.getScanHome(), path)));
+          myExcludes.add(new PathRule(resolvePath(scanHome, path)));
           continue;
         }
 
@@ -68,7 +68,7 @@ public class RulesParser {
             throw new IOException("Failed to parse java rule: " + line);
           }
 
-          myVersions.add(new VersionRule(resolvePath(argz.getScanHome(), part), v));
+          myVersions.add(new VersionRule(resolvePath(scanHome, part), v));
           parsed = true;
           break;
         }

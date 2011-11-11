@@ -97,7 +97,7 @@ public class Program {
     Reader rdr = null;
     try {
       rdr = new InputStreamReader(new FileInputStream(args.getConfigFile()), "utf-8");
-      return RulesParser.parseConfig(args, rdr);
+      return RulesParser.parseConfig(args.getScanHome(), rdr);
     } catch(IOException e) {
       System.err.println("Failed to parse settings. " + e.getMessage());
       throw new RuntimeException("No settings found");

@@ -103,16 +103,4 @@ public class FilesProcessorTest extends RulesBaseTestCase {
     FilesProcessor.processFiles(myHome, new JavaCheckSettings(parseConfig(config)), rep);
   }
 
-  private void saveFile(@NotNull final String name, @NotNull final byte[] ps) throws IOException {
-    final File file = new File(myHome, name);
-    OutputStream os = new FileOutputStream(file);
-    os.write(ps);
-    os.close();
-  }
-
-  private byte[] classBytes(int version) {
-    return new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, 0, 0, 0, (byte) version, 0, 0, 0, 0, 0};
-  }
-
-
 }

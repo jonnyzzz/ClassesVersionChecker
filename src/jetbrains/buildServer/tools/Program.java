@@ -145,7 +145,7 @@ public class Program {
           try {
             step.process(file, this);
           } catch (Throwable e) {
-            e.printStackTrace();
+            reporting.postError(file, e.toString());
           }
         }
       }

@@ -22,6 +22,7 @@ import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
+import jetbrains.buildServer.tools.rules.VersionRule;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
@@ -117,7 +118,7 @@ public class RulesBaseTestCase extends BaseTestCase {
 
   protected class Expectations extends org.jmock.Expectations {
     protected BaseMatcher<ScanFile> file(@NotNull final String path) {
-      final String name = mockFile(path).getName();
+      final String name = resolve(path);
       return new BaseMatcher<ScanFile>() {
         public boolean matches(Object item) {
           ScanFile sf = (ScanFile) item;
@@ -126,6 +127,25 @@ public class RulesBaseTestCase extends BaseTestCase {
 
         public void describeTo(Description description) {
           description.appendText("ScanFile{" + name + "}");
+        }
+      };
+    }
+
+    @NotNull
+    private String resolve(@NotNull String path) {
+      return mockFile(path).getName();
+    }
+
+    protected BaseMatcher<VersionRule> versionRule(@NotNull final String path) {
+      final String name = resolve(path);
+      return new BaseMatcher<VersionRule>() {
+        public boolean matches(Object item) {
+          VersionRule vs = (VersionRule) item;
+          return vs.getPath().equals(name);
+        }
+
+        public void describeTo(Description description) {
+          description.appendText("Version Rule: " + name);
         }
       };
     }
@@ -146,6 +166,12 @@ public class RulesBaseTestCase extends BaseTestCase {
   public void expectGenericError(@NotNull final String name) {
     m.checking(new Expectations(){{
       oneOf(rep).postError(with(file(name)), with(any(String.class)));
+    }});
+  }
+
+  public void expectRuleNotVisited(@NotNull final String name) {
+    m.checking(new Expectations(){{
+      oneOf(rep).ruleNotVisited(with(versionRule(name)));
     }});
   }
 
@@ -250,9 +276,10 @@ public class RulesBaseTestCase extends BaseTestCase {
     }
   }
 
-
   protected void saveFile(@NotNull final String name, @NotNull final byte[] ps) throws IOException {
     final File file = new File(myHome, name);
+    //noinspection ResultOfMethodCallIgnored
+    file.getParentFile().mkdirs();
     OutputStream os = new FileOutputStream(file);
     os.write(ps);
     os.close();

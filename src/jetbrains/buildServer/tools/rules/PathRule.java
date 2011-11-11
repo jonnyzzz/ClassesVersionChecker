@@ -51,4 +51,12 @@ public class PathRule {
   public void setVisited() {
     myIsVisited = true;
   }
+
+  @Override
+  public String toString() {
+    return "PathRule{" +
+            "myPath='" + myPath + '\'' +
+            ", myIsVisited=" + myIsVisited +
+            '}';
+  }
 }

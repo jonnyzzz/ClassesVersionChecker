@@ -17,7 +17,6 @@
 package jetbrains.buildServer.tools;
 
 import jetbrains.buildServer.tools.errors.ErrorsCollection;
-import jetbrains.buildServer.tools.java.JavaCheckSettings;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
 import org.jetbrains.annotations.NotNull;
@@ -54,20 +53,9 @@ public class Program {
   }
 
   private static void processFiles(@NotNull final Arguments args) {
-    final PathSettings rules = parseRules(args);
-    rules.dumpTotalRules(System.out);
-
-    if (!rules.validateRules(System.err)) {
-      System.exit(2);
-    }
-
     final ErrorsCollection reporting = new ErrorsCollection(args);
 
-    FilesProcessor.processFiles(args.getScanHome(), new JavaCheckSettings(rules), reporting);
-
-    rules.assertVisited(reporting);
-
-    System.out.println();
+    ClassVersionChecker.checkClasses(args.getScanHome(), parseRules(args),reporting);
     System.out.println();
     System.out.println();
 

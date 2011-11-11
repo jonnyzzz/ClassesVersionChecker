@@ -18,6 +18,7 @@ package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.FilesProcessor;
 import jetbrains.buildServer.tools.java.JavaCheckSettings;
+import jetbrains.buildServer.tools.rules.PathSettings;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
@@ -208,6 +209,25 @@ public class FilesProcessorTest extends RulesBaseTestCase {
     runTest("1.7 => ");
   }
 
+  @Test
+  public void test_not_found_file_rule() throws IOException {
+    expectRuleNotVisited("some/useful/file.txt");
+    runTest("1.7 => some/useful/file.txt");
+  }
+
+  @Test
+  public void test_not_found_file_rule2() throws IOException {
+    expectRuleNotVisited("some/useful.zip!file.txt");
+    runTest("1.7 => some/useful.zip!file.txt");
+  }
+
+  @Test
+  public void test_not_found_file_rule3() throws IOException {
+    saveFile("som/useful.zip", zipStream(file("aaa.txt", "this is aaa".getBytes()), file("aaa2.txt", "this is aaa".getBytes())));
+    expectRuleNotVisited("some/useful.zip!file.txt");
+    runTest("1.7 => some/useful.zip!file.txt");
+  }
+
   private void writeAllVersionClasses() throws IOException {
     saveFile("51.class", classBytes(51)); //1.7
     saveFile("50.class", classBytes(50)); //1.6
@@ -217,8 +237,10 @@ public class FilesProcessorTest extends RulesBaseTestCase {
     saveFile("46.class", classBytes(46)); //1.2
   }
 
-  private void runTest(@NotNull final String config) throws IOException {
-    FilesProcessor.processFiles(myHome, new JavaCheckSettings(parseConfig(config)), rep);
+  protected void runTest(@NotNull final String config) throws IOException {
+    final PathSettings rules = parseConfig(config);
+    FilesProcessor.processFiles(myHome, new JavaCheckSettings(rules), rep);
+    rules.assertVisited(rep);
   }
 
 }

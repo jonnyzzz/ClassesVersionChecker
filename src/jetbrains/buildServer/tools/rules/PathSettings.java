@@ -30,7 +30,8 @@ public class PathSettings {
   private final Collection<PathRule> myExcludes;
   private final Collection<VersionRule> myVersions;
 
-  public PathSettings(Collection<PathRule> excludes, Collection<VersionRule> versions) {
+  public PathSettings(@NotNull final Collection<PathRule> excludes,
+                      @NotNull final Collection<VersionRule> versions) {
     myExcludes = excludes;
     myVersions = versions;
   }

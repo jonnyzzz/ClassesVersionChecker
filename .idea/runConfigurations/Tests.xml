@@ -29,7 +29,7 @@
     <ConfigurationWrapper RunnerId="Run" />
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="classVersionChecker:jar" />
+        <artifact name="jar" />
       </option>
     </method>
   </configuration>

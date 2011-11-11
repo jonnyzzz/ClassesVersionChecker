@@ -85,12 +85,12 @@ public class RulesParser {
   }
 
   private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {
-    path = path.trim();
+    path = path.trim().replaceAll("[\\\\/]+", "/");
     if (path.length() == 0) return home.getPath();
     int q = path.indexOf('!');
 
     if (q > 0) {
-      return resolvePath(home, path.substring(0, q)) + (path.substring(q).replaceAll("[\\\\/]+", "/"));
+      return resolvePath(home, path.substring(0, q)) + (path.substring(q));
     }
 
     return new File(home, path).getCanonicalPath();

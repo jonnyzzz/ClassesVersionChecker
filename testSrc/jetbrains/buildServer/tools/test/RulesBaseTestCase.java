@@ -25,6 +25,7 @@ import jetbrains.buildServer.tools.rules.RulesParser;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -150,6 +151,30 @@ public class RulesBaseTestCase extends BaseTestCase {
     return os.toByteArray();
   }
 
+  @NotNull
+  protected ZipAction zipStream(@NotNull final String name, @NotNull final ZipAction... files) throws IOException {
+    final byte[] bytes = zipStream(files);
+    return new ZipAction(name) {
+      @Override
+      public byte[] getContent() {
+        return bytes;
+      }
+    };
+  }
+
+  @NotNull
+  protected ZipAction file(@NotNull final String name, @NotNull final byte[] content) {
+    return new ZipFileAction(name, content);
+  }
+
+  protected byte[] zipStream(@NotNull final ZipAction... files) throws IOException {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    zipStream(os, files);
+
+    os.close();
+    return os.toByteArray();
+  }
+
   private void zipStream(@NotNull final OutputStream os, @NotNull final String[] files) throws IOException {
     final ZipOutputStream zos = new ZipOutputStream(os);
 
@@ -173,6 +198,50 @@ public class RulesBaseTestCase extends BaseTestCase {
     zos.finish();
   }
 
+  private void zipStream(@NotNull final OutputStream os, @NotNull final ZipAction[] files) throws IOException {
+    final ZipOutputStream zos = new ZipOutputStream(os);
+
+    for (ZipAction file : files) {
+      zos.putNextEntry(new ZipEntry(file.getName()));
+      final byte[] content = file.getContent();
+      if (content != null) {
+        zos.write(content);
+      }
+    }
+    zos.finish();
+  }
+
+  protected abstract class ZipAction {
+    private final String myName;
+
+    public ZipAction(@NotNull final String name) {
+      myName = name;
+    }
+
+    public String getName() {
+      return myName;
+    }
+
+    @Nullable
+    public abstract byte[] getContent();
+  }
+
+  protected class ZipFileAction extends ZipAction {
+    @NotNull
+    private final byte[] myContent;
+
+    public ZipFileAction(@NotNull String name, @NotNull final byte[] content) {
+      super(name);
+      myContent = content;
+    }
+
+    @NotNull
+    @Override
+    public byte[] getContent() {
+      return myContent;
+    }
+  }
+
 
   protected void saveFile(@NotNull final String name, @NotNull final byte[] ps) throws IOException {
     final File file = new File(myHome, name);
@@ -183,6 +252,10 @@ public class RulesBaseTestCase extends BaseTestCase {
 
   protected byte[] classBytes(int version) {
     return new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, 0, 0, 0, (byte) version, 0, 0, 0, 0, 0};
+  }
+
+  protected ZipAction classBytes(@NotNull String name, int version) {
+    return file(name, classBytes(version));
   }
 
 }

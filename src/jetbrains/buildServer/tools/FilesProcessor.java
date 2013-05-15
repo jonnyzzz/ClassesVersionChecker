@@ -16,7 +16,7 @@ package jetbrains.buildServer.tools;
  */
 
 import jetbrains.buildServer.tools.fs.FSScanFile;
-import jetbrains.buildServer.tools.step.ClassFileScanStep;
+import jetbrains.buildServer.tools.step.CheckFileScanStep;
 import jetbrains.buildServer.tools.step.DirectoryScanStep;
 import jetbrains.buildServer.tools.step.ScanZipStep;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ public class FilesProcessor {
                                   @NotNull final ErrorReporting reporting) {
     final Continuation c = new Continuation() {
       private final ScanStep[] steps = new ScanStep[]{
-              new ClassFileScanStep(settings, reporting),
+              new CheckFileScanStep(settings, reporting),
               new ScanZipStep(),
               new DirectoryScanStep(),
       };

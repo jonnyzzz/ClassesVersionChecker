@@ -21,7 +21,7 @@ import jetbrains.buildServer.tools.CheckSettings;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.rules.PathSettings;
-import jetbrains.buildServer.tools.step.ClassFileChecker;
+import jetbrains.buildServer.tools.checkers.ClassFileChecker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

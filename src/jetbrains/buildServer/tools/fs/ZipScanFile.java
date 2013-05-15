@@ -57,13 +57,13 @@ public class ZipScanFile implements ScanFile {
       }
 
       @Override
-      public int read(byte[] b) throws IOException {
+      public int read(@NotNull byte[] b) throws IOException {
         if (isClosed.get()) return 0;
         return myZip.read(b);
       }
 
       @Override
-      public int read(byte[] b, int off, int len) throws IOException {
+      public int read(@NotNull byte[] b, int off, int len) throws IOException {
         if (isClosed.get()) return 0;
         return myZip.read(b, off, len);
       }

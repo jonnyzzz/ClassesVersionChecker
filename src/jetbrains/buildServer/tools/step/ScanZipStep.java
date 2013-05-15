@@ -47,13 +47,16 @@ public class ScanZipStep implements ScanStep {
     }
   }
 
-  private ZipInputStream openZip(ScanFile file, String name) throws IOException {
-    ZipInputStream zip;
+  private ZipInputStream openZip(@NotNull final ScanFile file,
+                                 @NotNull final String name) throws IOException {
     if (name.endsWith(".zip")) {
-      zip = new ZipInputStream(new BufferedInputStream(file.openStream()));
-    } else {
-      zip = new JarInputStream(new BufferedInputStream(file.openStream()));
+      return new ZipInputStream(new BufferedInputStream(file.openStream()));
     }
-    return zip;
+
+    if (name.endsWith(".jar")) {
+      return new JarInputStream(new BufferedInputStream(file.openStream()));
+    }
+
+    throw new IOException("Unexpected archive type: " + name);
   }
 }

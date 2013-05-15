@@ -3,8 +3,8 @@
     <extension name="coverage" enabled="false" merge="false" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="jetbrains.buildServer.tools.Program" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="E:\ref\TeamCity.Trunk E:\Work\TeamCity\trunk\buildserver\TeamCityBuild\teamcity-checker-rules.txt" />
-    <option name="WORKING_DIRECTORY" value="" />
+    <option name="PROGRAM_PARAMETERS" value="E:\ref\TeamCity.21207 E:\Work\TeamCity\trunk\buildserver\TeamCityBuild\teamcity-checker-rules.txt" />
+    <option name="WORKING_DIRECTORY" value="file://E:/ref/TeamCity.21207" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />

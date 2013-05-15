@@ -2,10 +2,7 @@
   <artifact name="files">
     <output-path>$PROJECT_DIR$/out/artifacts/files</output-path>
     <properties id="ant-postprocessing">
-      <options enabled="true">
-        <file>file://$PROJECT_DIR$/build/ant.build.xml</file>
-        <target>updateVersion</target>
-      </options>
+      <options enabled="true" />
     </properties>
     <root id="root">
       <element id="directory" name="META-INF">
@@ -15,6 +12,7 @@
       <element id="module-output" name="classVersionChecker" />
       <element id="file-copy" path="$PROJECT_DIR$/README" />
       <element id="file-copy" path="$PROJECT_DIR$/sample-config.txt" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/asm/asm-all-4.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

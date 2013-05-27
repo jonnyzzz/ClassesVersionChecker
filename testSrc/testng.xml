@@ -8,6 +8,7 @@
       <class name="jetbrains.buildServer.tools.test.ZipFileScanStepTest"/>
       <class name="jetbrains.buildServer.tools.test.FilesProcessorTest"/>
       <class name="jetbrains.buildServer.tools.test.ClassVersionCheckerTest"/>
+      <class name="jetbrains.buildServer.tools.test.StaticFieldsCheckerTest"/>
     </classes>
   </test>
 </suite>

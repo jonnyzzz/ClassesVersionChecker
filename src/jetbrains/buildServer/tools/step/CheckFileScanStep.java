@@ -38,9 +38,9 @@ public class CheckFileScanStep implements ScanStep {
   public void process(@NotNull final ScanFile file, @NotNull final Continuation c) throws IOException {
     if (!file.isFile()) return;
 
-    final CheckAction mode = mySettings.getFileCheckMode(file, myErrors);
-    if (mode != null) {
-      mode.process(file, myErrors);
+    final CachedScanFile cachedFile = new CachedScanFile(file);
+    for (CheckAction mode : mySettings.getFileCheckMode(file, myErrors)) {
+      mode.process(cachedFile, myErrors);
     }
   }
 }

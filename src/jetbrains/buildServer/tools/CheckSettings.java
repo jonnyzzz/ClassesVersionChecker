@@ -17,7 +17,8 @@
 package jetbrains.buildServer.tools;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -35,6 +36,7 @@ public interface CheckSettings {
    * @param error error reporter if needed
    * @return check action or null
    */
-  @Nullable CheckAction getFileCheckMode(@NotNull final ScanFile file,
-                                         @NotNull final ErrorReporting error);
+  @NotNull
+  Collection<? extends CheckAction> getFileCheckMode(@NotNull final ScanFile file,
+                                                     @NotNull final ErrorReporting error);
 }

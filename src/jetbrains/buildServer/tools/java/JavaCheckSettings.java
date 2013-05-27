@@ -20,10 +20,13 @@ import jetbrains.buildServer.tools.CheckAction;
 import jetbrains.buildServer.tools.CheckSettings;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
-import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.checkers.ClassFileChecker;
+import jetbrains.buildServer.tools.rules.PathSettings;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,16 +49,16 @@ public class JavaCheckSettings implements CheckSettings {
     return myRules.isPathExcluded(file);
   }
 
-  @Nullable
-  public CheckAction getFileCheckMode(@NotNull ScanFile file, @NotNull final ErrorReporting error) {
-    if (!file.getName().endsWith(".class")) return null;
+  @NotNull
+  public Collection<? extends CheckAction> getFileCheckMode(@NotNull ScanFile file, @NotNull final ErrorReporting error) {
+    if (!file.getName().endsWith(".class")) return Collections.emptyList();
 
     final JavaVersion version = myRules.getFileCheckMode(file);
     if (version == null) {
       error.postCheckError(file, "No rule for file");
-      return null;
+      return Collections.emptyList();
     }
-    return new ClassFileChecker(version);
+    return Arrays.asList(new ClassFileChecker(version));
   }
 
 }

@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.tools;
 
-import jetbrains.buildServer.tools.rules.VersionRule;
+import jetbrains.buildServer.tools.rules.PathRule;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,5 +27,5 @@ public interface ErrorReporting {
   void postCheckError(@NotNull final ScanFile file, @NotNull final String error);
   void postError(@NotNull final ScanFile file, @NotNull final String error);
 
-  void ruleNotVisited(@NotNull final VersionRule rule);
+  void ruleNotVisited(@NotNull final PathRule rule);
 }

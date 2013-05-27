@@ -20,7 +20,7 @@ import jetbrains.buildServer.tools.Arguments;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.MultiMap;
 import jetbrains.buildServer.tools.ScanFile;
-import jetbrains.buildServer.tools.rules.VersionRule;
+import jetbrains.buildServer.tools.rules.PathRule;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -85,7 +85,7 @@ public class ErrorsCollection implements ErrorReporting {
     }
   }
 
-  public void ruleNotVisited(@NotNull VersionRule rule) {
+  public void ruleNotVisited(@NotNull PathRule rule) {
     final String path = path(rule.getPath());
     final String msg = "Path was not found in the distribution";
 

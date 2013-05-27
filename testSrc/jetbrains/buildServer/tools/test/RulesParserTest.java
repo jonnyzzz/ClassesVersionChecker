@@ -111,4 +111,15 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertEquals(it.next().getPath(), new File(myHome, "agent").getPath());
     Assert.assertEquals(it.next().getPath(), new File(myHome, "webapps").getPath());
   }
+
+  @Test
+  public void testStaticClass_empty_rule() throws IOException {
+    PathSettings s1 = parseConfig("\n" +
+            "check static => \n");
+
+    final Iterator<StaticCheckRule> it = s1.getStaticChecks().iterator();
+
+    Assert.assertEquals(s1.getStaticChecks().size(), 1);
+    Assert.assertEquals(it.next().getPath(), myHome.getPath());
+  }
 }

@@ -66,7 +66,7 @@ public class RulesParser {
         }
 
         if (line.startsWith("check static =>")) {
-          String path = line.substring("check static => ".length()).trim();
+          String path = line.substring("check static =>".length()).trim();
           myStaticRules.add(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
           continue;
         }

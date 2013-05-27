@@ -35,6 +35,8 @@ public class RulesParser {
   public static PathSettings parseConfig(@NotNull final File scanHome, @NotNull final Reader rdr) throws IOException {
     final Collection<PathRule> myExcludes = new ArrayList<PathRule>();
     final Collection<VersionRule> myVersions = new ArrayList<VersionRule>();
+    final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
+    final Collection<StaticCheckRule> myStaticRules = new ArrayList<StaticCheckRule>();
 
     try {
       final Scanner sc = new Scanner(rdr);
@@ -55,6 +57,20 @@ public class RulesParser {
           continue;
         }
 
+        if (line.startsWith("allow static class")) {
+          String clazz = line.substring("allow static class".length()).trim();
+          if (clazz.length() > 0) {
+            myAllowedStaticClasses.addRule(clazz);
+          }
+          continue;
+        }
+
+        if (line.startsWith("check static =>")) {
+          String path = line.substring("check static => ".length()).trim();
+          myStaticRules.add(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
+          continue;
+        }
+
         boolean parsed = false;
         for (JavaVersion v : JavaVersion.values()) {
           final String prefix = v.getShortName();
@@ -72,8 +88,8 @@ public class RulesParser {
           parsed = true;
           break;
         }
-
         if (parsed) continue;
+
 
         throw new IOException("Unexpected string: '" + line + "' in config");
       }
@@ -81,7 +97,7 @@ public class RulesParser {
       rdr.close();
     }
 
-    return new PathSettings(myExcludes, myVersions);
+    return new PathSettings(myExcludes, myVersions, myStaticRules);
   }
 
   private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {

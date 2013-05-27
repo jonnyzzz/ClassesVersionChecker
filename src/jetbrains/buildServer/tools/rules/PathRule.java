@@ -28,7 +28,7 @@ public class PathRule {
   private final String myPath;
   private boolean myIsVisited;
 
-  public PathRule(String path) {
+  public PathRule(@NotNull final String path) {
     myPath = path;
   }
 

@@ -20,13 +20,11 @@ import jetbrains.buildServer.tools.CheckAction;
 import jetbrains.buildServer.tools.CheckSettings;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
-import jetbrains.buildServer.tools.checkers.ClassFileChecker;
+import jetbrains.buildServer.tools.rules.CheckHolder;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -53,12 +51,18 @@ public class JavaCheckSettings implements CheckSettings {
   public Collection<? extends CheckAction> getFileCheckMode(@NotNull ScanFile file, @NotNull final ErrorReporting error) {
     if (!file.getName().endsWith(".class")) return Collections.emptyList();
 
-    final JavaVersion version = myRules.getFileCheckMode(file);
-    if (version == null) {
+    Collection<? extends CheckHolder> modes = myRules.getFileCheckMode(file);
+    if (modes.isEmpty()) {
       error.postCheckError(file, "No rule for file");
       return Collections.emptyList();
     }
-    return Arrays.asList(new ClassFileChecker(version));
+
+    final List<CheckAction> actions = new ArrayList<CheckAction>();
+    for (CheckHolder holder : modes) {
+      actions.add(holder.getCheckAction());
+    }
+
+    return actions;
   }
 
 }

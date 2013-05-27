@@ -18,11 +18,13 @@ package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.java.JavaVersion;
 import jetbrains.buildServer.tools.rules.PathSettings;
+import jetbrains.buildServer.tools.rules.StaticCheckRule;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -93,5 +95,20 @@ public class RulesParserTest extends RulesBaseTestCase {
     final File base = new File(myHome, "fff.jar");
     Assert.assertEquals(s.getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
     Assert.assertEquals(s.getExcludes().iterator().next().getBaseFile(), base);
+  }
+
+  @Test
+  public void testStaticClass_oneRule() throws IOException {
+    PathSettings s1 = parseConfig("\n" +
+            "allow static class org.apache.log4j.Logger\n" +
+            "\n" +
+            "check static => webapps/\n" +
+            "check static => agent/");
+
+    final Iterator<StaticCheckRule> it = s1.getStaticChecks().iterator();
+
+    Assert.assertEquals(s1.getStaticChecks().size(), 2);
+    Assert.assertEquals(it.next().getPath(), new File(myHome, "agent").getPath());
+    Assert.assertEquals(it.next().getPath(), new File(myHome, "webapps").getPath());
   }
 }

@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.tools.rules;
 
+import jetbrains.buildServer.tools.CheckAction;
+import jetbrains.buildServer.tools.checkers.ClassFileChecker;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 08.11.11 15:41
 */
-public class VersionRule extends PathRule {
+public class VersionRule extends PathRule implements CheckHolder {
   private final JavaVersion myVersion;
 
   public VersionRule(@NotNull final String path, @NotNull final JavaVersion version) {
@@ -41,5 +43,10 @@ public class VersionRule extends PathRule {
     return "VersionRule{" + super.toString() + ", " +
             "myVersion=" + myVersion +
             '}';
+  }
+
+  @NotNull
+  public CheckAction getCheckAction() {
+    return new ClassFileChecker(getVersion());
   }
 }

@@ -41,7 +41,7 @@ public class StaticFieldsChecker implements CheckAction {
         if ((Opcodes.ACC_STATIC & access) == 0) return;
 
         if ((Opcodes.ACC_FINAL & access) == 0) {
-          reporting.postCheckError(file, "Class contains '" + myClassName + "." + name + "' non-final static field");
+          reporting.postCheckError(file, "Class '" + myClassName + "' contains non-final static field '" + name + "'");
           return;
         }
 
@@ -53,9 +53,9 @@ public class StaticFieldsChecker implements CheckAction {
         if (type.getClassName().equals(String.class.getName())) return;
 
 
-        reporting.postCheckError(file, "Class contains '" + myClassName + "." + name + "' final static field");
+        reporting.postCheckError(file, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + type.getClassName() + "'");
       }
-    }, 0 );
+    }, 0);
   }
 
   @NotNull

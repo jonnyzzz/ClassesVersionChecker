@@ -62,19 +62,20 @@ public class StaticFieldsCheckerTest {
 
   @Test
   public void test_report_static_final() throws IOException {
-    processClass(StaticFieldsTest_StaticFinal.class, "Class contains 'testData.StaticFieldsTest_StaticFinal.LOG[1-4]' final static field");
+    processClass(StaticFieldsTest_StaticFinal.class, "Class 'testData.StaticFieldsTest_StaticFinal' contains final static field 'LOG[1-4]' of type 'testData.StaticFieldsTest_StaticFinal$Logger'");
   }
 
   @Test
   public void test_report_static() throws IOException {
-    processClass(StaticFieldsTest_Static.class, "Class contains 'testData.StaticFieldsTest_Static.i?LOG[1-4]' non-final static field");
+    processClass(StaticFieldsTest_Static.class, "Class 'testData.StaticFieldsTest_Static' contains non-final static field 'i?LOG[1-4]'");
   }
 
   @Test
   public void test_report_static_nestedClasses() throws IOException {
     processClass(StaticFieldsTest_NestedClasses.class,
-            "Class contains 'testData.StaticFieldsTest_NestedClasses$Foo.foo' non-final static field",
-            "Class contains 'testData.StaticFieldsTest_NestedClasses$N$M$Q.[nmq][1-2]' (non-)?final static field"
+            "Class 'testData.StaticFieldsTest_NestedClasses$Foo' contains non-final static field 'foo'",
+            "Class 'testData.StaticFieldsTest_NestedClasses$N$M$Q' contains non-final static field '[nmq]2'",
+            "Class 'testData.StaticFieldsTest_NestedClasses$N$M$Q' contains final static field '[nmq]1' of type 'testData.StaticFieldsTest_NestedClasses$N($M($Q)?)?'"
             );
   }
 
@@ -90,7 +91,7 @@ public class StaticFieldsCheckerTest {
 
   @Test
   public void test_report_static_interface() throws IOException {
-    processClass(StaticFieldsTest_Interface.class, "Class contains 'testData.StaticFieldsTest_Interface.singleton' final static field");
+    processClass(StaticFieldsTest_Interface.class, "Class 'testData.StaticFieldsTest_Interface' contains final static field 'singleton' of type 'testData.StaticFieldsTest_Interface'");
   }
 
   @Test

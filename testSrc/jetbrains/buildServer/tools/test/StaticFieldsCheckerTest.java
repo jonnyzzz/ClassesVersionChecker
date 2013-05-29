@@ -130,6 +130,9 @@ public class StaticFieldsCheckerTest {
 
   private void assertErrors(@NotNull String... errors) {
     List<String> all = new ArrayList<String>(myLoggerErrors);
+    for (Iterator<String> it = all.iterator(); it.hasNext(); ) {
+      if (it.next().startsWith("Static usage of ")) it.remove();
+    }
 
     for (String error : errors) {
       Pattern pt = Pattern.compile(error.replace("$", "\\$").replace(".", "\\."));

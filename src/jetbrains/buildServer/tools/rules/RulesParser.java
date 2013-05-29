@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Scanner;
+
+import static jetbrains.buildServer.tools.rules.PathRules.Builder;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,10 +33,9 @@ import java.util.Scanner;
 public class RulesParser {
   @NotNull
   public static PathSettings parseConfig(@NotNull final File scanHome, @NotNull final Reader rdr) throws IOException {
-    final Collection<PathRule> myExcludes = new ArrayList<PathRule>();
-    final Collection<VersionRule> myVersions = new ArrayList<VersionRule>();
+    final Builder<VersionRule> myVersions = new Builder<VersionRule>();
+    final Builder<StaticCheckRule> myStatics = new Builder<StaticCheckRule>();
     final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
-    final Collection<StaticCheckRule> myStaticRules = new ArrayList<StaticCheckRule>();
 
     try {
       final Scanner sc = new Scanner(rdr);
@@ -53,7 +52,7 @@ public class RulesParser {
           } else {
             throw new IOException("Failed to parse - rule: " + line);
           }
-          myExcludes.add(new PathRule(resolvePath(scanHome, path)));
+          myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
           continue;
         }
 
@@ -67,7 +66,7 @@ public class RulesParser {
 
         if (line.startsWith("check static =>")) {
           String path = line.substring("check static =>".length()).trim();
-          myStaticRules.add(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
+          myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
           continue;
         }
 
@@ -84,7 +83,7 @@ public class RulesParser {
             throw new IOException("Failed to parse java rule: " + line);
           }
 
-          myVersions.add(new VersionRule(resolvePath(scanHome, part), v));
+          myVersions.include(new VersionRule(resolvePath(scanHome, part), v));
           parsed = true;
           break;
         }
@@ -97,7 +96,7 @@ public class RulesParser {
       rdr.close();
     }
 
-    return new PathSettings(myExcludes, myVersions, myStaticRules);
+    return new PathSettings(myVersions.build(), myStatics.build());
   }
 
   private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {

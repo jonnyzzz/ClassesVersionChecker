@@ -37,13 +37,13 @@ public class RulesParserTest extends RulesBaseTestCase {
     final String configText = "1.5 => fff";
     final PathSettings s = parseConfig(configText);
 
-    Assert.assertTrue(s.getExcludes().isEmpty());
-    Assert.assertEquals(s.getVersions().size(), 1);
-    Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
+    Assert.assertTrue(s.getVersions().getExcludes().isEmpty());
+    Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
     final File base = new File(myHome, "fff");
-    Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath());
-    Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath());
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
   }
 
 
@@ -51,50 +51,50 @@ public class RulesParserTest extends RulesBaseTestCase {
   public void testResolveRules_include_zip() throws IOException {
     final PathSettings s = parseConfig("1.5 => fff.jar!f/a/d/d/g/r");
 
-    Assert.assertTrue(s.getExcludes().isEmpty());
-    Assert.assertEquals(s.getVersions().size(), 1);
-    Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
+    Assert.assertTrue(s.getVersions().getExcludes().isEmpty());
+    Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
     final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_include_zip_normalize() throws IOException {
     final PathSettings s = parseConfig("1.5 => p\\q//f\\//\\\\/fff.jar!f/a/\\d/d\\g/r");
 
-    Assert.assertTrue(s.getExcludes().isEmpty());
-    Assert.assertEquals(s.getVersions().size(), 1);
-    Assert.assertEquals(s.getVersions().iterator().next().getVersion(), JavaVersion.Java_1_5);
+    Assert.assertTrue(s.getVersions().getExcludes().isEmpty());
+    Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
     final File base = new File(myHome, "p/q/f/fff.jar");
-    Assert.assertEquals(s.getVersions().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_exclude() throws IOException {
     final PathSettings s = parseConfig("- => fff.jar!f/a/d/d/g/r");
 
-    Assert.assertTrue(s.getVersions().isEmpty());
-    Assert.assertEquals(s.getExcludes().size(), 1);
+    Assert.assertTrue(s.getVersions().getIncludes().isEmpty());
+    Assert.assertEquals(s.getVersions().getExcludes().size(), 1);
 
     final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getExcludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getBaseFile(), base);
   }
 
   @Test
   public void testResolveRules_exclude_normalize() throws IOException {
     final PathSettings s = parseConfig("- => fff.jar!f/a\\d//d/\\g/r");
 
-    Assert.assertTrue(s.getVersions().isEmpty());
-    Assert.assertEquals(s.getExcludes().size(), 1);
+    Assert.assertTrue(s.getVersions().getIncludes().isEmpty());
+    Assert.assertEquals(s.getVersions().getExcludes().size(), 1);
 
     final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getExcludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getBaseFile(), base);
   }
 
   @Test
@@ -105,9 +105,9 @@ public class RulesParserTest extends RulesBaseTestCase {
             "check static => webapps/\n" +
             "check static => agent/");
 
-    final Iterator<StaticCheckRule> it = s1.getStaticChecks().iterator();
+    final Iterator<? extends StaticCheckRule> it = s1.getStaticChecks().getIncludes().iterator();
 
-    Assert.assertEquals(s1.getStaticChecks().size(), 2);
+    Assert.assertEquals(s1.getStaticChecks().getIncludes().size(), 2);
     Assert.assertEquals(it.next().getPath(), new File(myHome, "agent").getPath());
     Assert.assertEquals(it.next().getPath(), new File(myHome, "webapps").getPath());
   }
@@ -117,9 +117,9 @@ public class RulesParserTest extends RulesBaseTestCase {
     PathSettings s1 = parseConfig("\n" +
             "check static => \n");
 
-    final Iterator<StaticCheckRule> it = s1.getStaticChecks().iterator();
+    final Iterator<? extends StaticCheckRule> it = s1.getStaticChecks().getIncludes().iterator();
 
-    Assert.assertEquals(s1.getStaticChecks().size(), 1);
+    Assert.assertEquals(s1.getStaticChecks().getIncludes().size(), 1);
     Assert.assertEquals(it.next().getPath(), myHome.getPath());
   }
 }

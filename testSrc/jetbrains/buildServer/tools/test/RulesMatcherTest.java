@@ -38,24 +38,33 @@ import static org.testng.Assert.assertNull;
  *         Date: 11.11.11 15:33
  */
 public class RulesMatcherTest extends RulesBaseTestCase {
-
   @Test
   public void testMatchesFile() throws IOException {
-    final PathSettings s = parseConfig("1.7 => aaa/bbb.jar\r\n-=>aaa/b");
+    final PathSettings s = parseConfig("1.7 => aaa/bbb.jar\r\n-=>aaa/z");
 
     assertEquals(getVersionRule(s, mockFile("aaa/bbb.jar")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/bbb.jar!aaa")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/bbb.jar!aaa/bbb")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/bbb.jar!aaa/bbb.jar!zzz")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/zzz.jar")), null);
     assertEquals(getVersionRule(s, mockFile("aaa")), null);
+  }
 
-    Assert.assertTrue(s.isPathExcluded(mockFile("aaa/b")));
-    Assert.assertTrue(s.isPathExcluded(mockFile("aaa/bb")));
-    Assert.assertTrue(s.isPathExcluded(mockFile("aaa/bbq")));
+  @Test
+  public void testExcludes() throws IOException {
+    final PathSettings s = parseConfig("1.7 => aaa/bbb.jar\r\n-=>aaa/b");
+
+    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/b")));
+    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bb")));
+    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbq")));
 
     //excludes wins
-    Assert.assertTrue(s.isPathExcluded(mockFile("aaa/bbb.jar")));
-    Assert.assertTrue(s.isPathExcluded(mockFile("aaa/bbb.jar!sss")));
+    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar")));
+    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
+  }
+
+  private boolean isPathExcluded(PathSettings s, ScanFile f) {
+    return s.getFileCheckMode(f).isEmpty();
   }
 
   @Nullable

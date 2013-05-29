@@ -23,58 +23,55 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 08.11.11 15:42
-*/
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 08.11.11 15:42
+ */
 public class PathRules<T extends PathRule> {
-  private final Set<T> myRules;
+  private final SimplePathRules<T> myIncludes;
+  private final SimplePathRules<PathRule> myExcludes;
 
-  public PathRules(@NotNull final Collection<T> rules) {
-    final TreeSet<T> ts = new TreeSet<T>(MATCH_ORDER);
-    ts.addAll(rules);
-    myRules = Collections.unmodifiableSet(ts);
+  public PathRules(@NotNull final Collection<? extends T> includes,
+                   @NotNull final Collection<? extends PathRule> excludes) {
+    myIncludes = new SimplePathRules<T>(includes);
+    myExcludes = new SimplePathRules<PathRule>(excludes);
   }
 
   @NotNull
-  public Collection<T> getRules() {
-    Set<T> set = new TreeSet<T>(DUMP_ORDER);
-    set.addAll(myRules);
-    return set;
+  public Collection<? extends T> getIncludes() {
+    return myIncludes.getRules();
+  }
+
+  @NotNull
+  public Collection<? extends PathRule> getExcludes() {
+    return myExcludes.getRules();
   }
 
   @Nullable
   public T findRule(@NotNull final ScanFile file) {
-    final String name = file.getName();
-    for (T rule : myRules) {
-      if (name.startsWith(rule.getPath())) {
-        rule.setVisited();
-        return rule;
-      }
-    }
-    return null;
+    if (isPathExcluded(file)) return null;
+    return myIncludes.findRule(file);
   }
 
-  private final static Comparator<PathRule> MATCH_ORDER = new Comparator<PathRule>() {
-    public int compare(PathRule o1, PathRule o2) {
-      final String p1 = o1.getPath();
-      final String p2 = o2.getPath();
+  public boolean isPathExcluded(@NotNull ScanFile file) {
+    return myExcludes.findRule(file) != null;
+  }
 
-      final int s1 = p1.length();
-      final int s2 = p2.length();
+  public static class Builder<T extends PathRule> {
+    private final Collection<T> myIncludes = new ArrayList<T>();
+    private final Collection<PathRule> myExcludes = new ArrayList<PathRule>();
 
-      if (s1 < s2) return 1;
-      if (s1 > s2) return -1;
-      return p1.compareTo(p2);
+    public void include(@NotNull final T rule) {
+      myIncludes.add(rule);
     }
-  };
 
-  private final static Comparator<PathRule> DUMP_ORDER = new Comparator<PathRule>() {
-    public int compare(PathRule o1, PathRule o2) {
-      final String p1 = o1.getPath();
-      final String p2 = o2.getPath();
-
-      return p1.compareTo(p2);
+    public void exclude(@NotNull final PathRule rule) {
+      myExcludes.add(rule);
     }
-  };
 
+    @NotNull
+    public PathRules<T> build() {
+      return new PathRules<T>(myIncludes, myExcludes);
+    }
+
+  }
 }

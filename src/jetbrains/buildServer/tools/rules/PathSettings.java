@@ -32,35 +32,28 @@ import java.util.List;
 *         Date: 08.11.11 18:00
 */
 public class PathSettings {
-  private final PathRules<PathRule> myExcludes;
   private final PathRules<VersionRule> myVersions;
   private final PathRules<StaticCheckRule> myStatics;
 
-  public PathSettings(@NotNull final Collection<PathRule> excludes,
-                      @NotNull final Collection<VersionRule> versions,
-                      @NotNull final Collection<StaticCheckRule> staticChecks) {
-    myExcludes = new PathRules<PathRule>(excludes);
-    myVersions = new PathRules<VersionRule>(versions);
-    myStatics = new PathRules<StaticCheckRule>(staticChecks);
+  public PathSettings(@NotNull final PathRules<VersionRule> versions,
+                      @NotNull final PathRules<StaticCheckRule> staticChecks) {
+
+    myVersions = versions;
+    myStatics = staticChecks;
   }
 
   @NotNull
-  public Collection<PathRule> getExcludes() {
-    return myExcludes.getRules();
+  public PathRules<VersionRule> getVersions() {
+    return myVersions;
   }
 
   @NotNull
-  public Collection<VersionRule> getVersions() {
-    return myVersions.getRules();
+  public PathRules<StaticCheckRule> getStaticChecks() {
+    return myStatics;
   }
 
-  @NotNull
-  public Collection<StaticCheckRule> getStaticChecks() {
-    return myStatics.getRules();
-  }
-
-  public boolean isPathExcluded(@NotNull ScanFile file) {
-    return myExcludes.findRule(file) != null;
+  public boolean isPathExcluded(@NotNull final ScanFile file) {
+    return myVersions.isPathExcluded(file) && myStatics.isPathExcluded(file);
   }
 
   @NotNull
@@ -81,20 +74,15 @@ public class PathSettings {
 
   public boolean validateRules(@NotNull final PrintStream ps) {
     boolean failed = true;
-    for (PathRule exclude : getExcludes()) {
-      if (!exclude.getBaseFile().exists()) {
-        ps.println("Exclude rule file " + exclude.getPath() + " does not exist");
-      }
-    }
 
-    for (PathRule exclude : getVersions()) {
+    for (PathRule exclude : getVersions().getIncludes()) {
       if (!exclude.getBaseFile().exists()) {
         ps.println("Version rule " + exclude.getPath() + " does not match existing file");
         failed = false;
       }
     }
 
-    for (PathRule st : getStaticChecks()) {
+    for (PathRule st : getStaticChecks().getIncludes()) {
       if (!st.getBaseFile().exists()) {
         ps.println("Static check rule " + st.getPath() + " does not match existing file");
         failed = false;
@@ -105,12 +93,12 @@ public class PathSettings {
 
 
   public void assertVisited(@NotNull final ErrorReporting reporting) {
-    for (VersionRule rule : getVersions()) {
+    for (VersionRule rule : getVersions().getIncludes()) {
       if (!rule.isVisited()) {
         reporting.ruleNotVisited(rule);
       }
     }
-    for (StaticCheckRule rule : getStaticChecks()) {
+    for (StaticCheckRule rule : getStaticChecks().getIncludes()) {
       if (!rule.isVisited()) {
         reporting.ruleNotVisited(rule);
       }
@@ -119,22 +107,17 @@ public class PathSettings {
 
 
   public void dumpTotalRules(@NotNull final PrintStream ps) {
-    ps.println("Excludes: ");
-    for (PathRule e : getExcludes()) {
-      ps.println("  " + e.getPath());
-    }
     ps.println();
     ps.println("Versions to check: ");
-    for (VersionRule e : getVersions()) {
+    for (VersionRule e : getVersions().getIncludes()) {
       ps.println("  " + e.getVersion() + " => " + e.getPath());
     }
     ps.println();
     ps.println("Static checks to check: ");
-    for (StaticCheckRule e : getStaticChecks()) {
+    for (StaticCheckRule e : getStaticChecks().getIncludes()) {
       ps.println("  static check " + " => " + e.getPath());
     }
     ps.println();
     ps.println();
   }
-
 }

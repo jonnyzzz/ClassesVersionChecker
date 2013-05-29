@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -34,7 +35,7 @@ import java.util.Arrays;
 public class PathRulesTest {
   @Test
   public void testMathLonger() {
-    PathRules<PathRule> r = new PathRules<PathRule>(Arrays.asList(new PathRule("a"), new PathRule("a/aa")));
+    PathRules<PathRule> r = new PathRules<PathRule>(Arrays.asList(new PathRule("a"), new PathRule("a/aa")), Collections.<PathRule>emptyList());
     PathRule rule = r.findRule(mockFile("a/aa/aaabbbaa"));
 
     Assert.assertNotNull(rule);
@@ -49,7 +50,7 @@ public class PathRulesTest {
                     new PathRule("a/aa/aaaa"),
                     new PathRule(""),
                     new PathRule("a/a/a/a/a/a/a/a/a")
-                    ));
+                    ), Collections.<PathRule>emptyList());
     PathRule rule = r.findRule(mockFile("a/aa/aaabbbaa"));
 
     Assert.assertNotNull(rule);
@@ -65,7 +66,7 @@ public class PathRulesTest {
                     new PathRule(""),
                     new PathRule("a/aa/aaab"),
                     new PathRule("a/a/a/a/a/a/a/a/a")
-                    ));
+                    ), Collections.<PathRule>emptyList());
     PathRule rule = r.findRule(mockFile("a/aa/aaabbbaa"));
 
     Assert.assertNotNull(rule);

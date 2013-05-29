@@ -24,10 +24,7 @@ import jetbrains.buildServer.tools.rules.PathRule;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -35,11 +32,11 @@ import java.util.TreeSet;
  */
 public class ErrorsCollection implements ErrorReporting {
   private final Arguments myArguments;
-  private final Map<String, String> myFileToMessage = new TreeMap<String, String>();
-  private final Map<String, String> myGenericErrors = new TreeMap<String, String>();
+  private final MultiMap<String, String> myFileToMessage = new MultiMap<String, String>();
+  private final MultiMap<String, String> myGenericErrors = new MultiMap<String, String>();
   private final String myScanPath;
 
-  private final Map<String, String> myShortErrors = new TreeMap<String, String>();
+  private final MultiMap<String, String> myShortErrors = new MultiMap<String, String>();
 
   public ErrorsCollection(@NotNull final Arguments arguments) {
     myArguments = arguments;
@@ -53,16 +50,17 @@ public class ErrorsCollection implements ErrorReporting {
       if (idx > 0) {
         path = path.substring(0, idx);
       }
-      if (myShortErrors.put(path, error) == null) {
+      if (!myShortErrors.containsKey(path)) {
         System.out.print("F");
       }
+      myShortErrors.putValue(path, error);
     }
   }
 
   public void postCheckError(@NotNull ScanFile file, @NotNull String error) {
     updateShortErrors(file, error);
     synchronized (myFileToMessage) {
-      myFileToMessage.put(path(file), error);
+      myFileToMessage.putValue(path(file), error);
     }
   }
 
@@ -81,7 +79,7 @@ public class ErrorsCollection implements ErrorReporting {
   public void postError(@NotNull ScanFile file, @NotNull String error) {
     updateShortErrors(file, error);
     synchronized (myGenericErrors) {
-      myGenericErrors.put(path(file), error);
+      myGenericErrors.putValue(path(file), error);
     }
   }
 
@@ -90,10 +88,10 @@ public class ErrorsCollection implements ErrorReporting {
     final String msg = "Path was not found in the distribution";
 
     synchronized (myGenericErrors) {
-      myGenericErrors.put(path, msg);
+      myGenericErrors.putValue(path, msg);
     }
     synchronized (myShortErrors) {
-      myShortErrors.put(path, msg);
+      myShortErrors.putValue(path, msg);
     }
   }
 
@@ -102,7 +100,7 @@ public class ErrorsCollection implements ErrorReporting {
   }
 
   public int getNumberOfErrors() {
-    return myGenericErrors.size() + myFileToMessage.size();
+    return myGenericErrors.size() + myFileToMessage.getValuesSize();
   }
 
   public void dumpShortReport(@NotNull final PrintStream pw) {
@@ -130,21 +128,31 @@ public class ErrorsCollection implements ErrorReporting {
     return reportFile;
   }
 
-  private void printMap(@NotNull final PrintStream pw, @NotNull final Map<String, String> map, @NotNull final String title) {
-    if (map.size() == 0) {
+  private void printMap(@NotNull final PrintStream pw, @NotNull final MultiMap<String, String> map, @NotNull final String title) {
+    if (map.isEmpty()) {
       pw.println("No " + title + " were found");
       pw.println();
       return;
     }
 
     final MultiMap<String, String> errorToFile = new MultiMap<String, String>();
-    for (Map.Entry<String, String> e : map.entrySet()) {
-      errorToFile.putValue(e.getValue(), e.getKey());
+    for (Map.Entry<String, List<String>> e : map.entrySet()) {
+      final String file = e.getKey();
+      for (String val : e.getValue()) {
+        errorToFile.putValue(val, file);
+      }
     }
 
     pw.println(title + " were found in: ");
 
-    for (Map.Entry<String, List<String>> e : errorToFile.entrySet()) {
+    List<Map.Entry<String,List<String>>> keys = new ArrayList<Map.Entry<String,List<String>>>(errorToFile.entrySet());
+    Collections.sort(keys, new Comparator<Map.Entry<String, List<String>>>() {
+      public int compare(Map.Entry<String, List<String>> o1, Map.Entry<String, List<String>> o2) {
+        return o1.getKey().compareToIgnoreCase(o2.getKey());
+      }
+    });
+
+    for (Map.Entry<String, List<String>> e : keys) {
       pw.println("  Error: " + e.getKey());
       for (String s : new TreeSet<String>(e.getValue())) {
         pw.println("    " + s);

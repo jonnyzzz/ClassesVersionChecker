@@ -14,7 +14,10 @@ public class StaticRuleSettings {
   private final Set<String> myAllowedClasses = new TreeSet<String>();
 
   public boolean isClassAllowed(@NotNull String name) {
-    return myAllowedClasses.contains(name);
+    for (String allowedClass : myAllowedClasses) {
+      if (name.startsWith(allowedClass)) return true;
+    }
+    return false;
   }
 
   public void addRule(@NotNull String rule) {

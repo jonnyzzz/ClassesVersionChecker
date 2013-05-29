@@ -70,7 +70,7 @@ public class Program {
       System.err.println("There were " + reporting.getNumberOfErrors() + " class version errors detected");
       System.err.flush();
       System.err.flush();
-      System.err.println("##teamcity[buildStatus status='FAILURE' text='" + reporting.getNumberOfErrors() + " class version errors. {build.status.text}']");
+      System.err.println("##teamcity[buildStatus status='FAILURE' text='" + reporting.getNumberOfErrors() + " class check errors. {build.status.text}']");
       System.err.flush();
       System.exit(1);
       return;

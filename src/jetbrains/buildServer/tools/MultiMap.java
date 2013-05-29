@@ -83,6 +83,14 @@ public class MultiMap<K, V> {
     return myMap.size();
   }
 
+  public int getValuesSize() {
+    int i = 0;
+    for (Map.Entry<K, List<V>> e : myMap.entrySet()) {
+      i += e.getValue().size();
+    }
+    return i;
+  }
+
   public void put(final K key, final List<V> values) {
     myMap.put(key, values);
   }

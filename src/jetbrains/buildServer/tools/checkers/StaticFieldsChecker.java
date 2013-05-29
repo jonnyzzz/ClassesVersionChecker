@@ -47,12 +47,15 @@ public class StaticFieldsChecker implements CheckAction {
         if ((Opcodes.ACC_ENUM & access) != 0) return;
         if ((Opcodes.ACC_STATIC & access) == 0) return;
 
+        final Type type = Type.getType(desc);
+
         if ((Opcodes.ACC_FINAL & access) == 0) {
+          reporting.postCheckError(file, "Static usage of '" + fieldType(desc) + "'");
           reporting.postCheckError(file, "Class '" + myClassName + "' contains non-final static field '" + name + "'");
           return;
         }
 
-        final Type type = Type.getType(desc);
+
         final int sort = type.getSort();
         //allow primitive type constants
         if (sort != Type.OBJECT && sort != Type.METHOD) return;
@@ -60,10 +63,18 @@ public class StaticFieldsChecker implements CheckAction {
         if (type.getClassName().equals(String.class.getName())) return;
         if (mySettings.isClassAllowed(type.getClassName())) return;
 
-        reporting.postCheckError(file, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + type.getClassName() + "'");
+        reporting.postCheckError(file, "Static usage of '" + fieldType(desc) + "'");
+        reporting.postCheckError(file, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + fieldType(desc) + "'");
       }
     }, 0);
   }
+
+  @NotNull
+  private static String fieldType(@NotNull String desc) {
+    final Type type = Type.getType(desc);
+    return type.getClassName();
+  }
+
 
   @NotNull
   private ClassReader createReader(@NotNull final ScanFile file) throws IOException {

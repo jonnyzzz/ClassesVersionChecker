@@ -7,6 +7,12 @@
 ;  xx => path
 ;     this is the rule to enforce check of java classes of version xx, where xx could
 ;     be one of the following: 1.2, 1.3, 1.4, 1.5, 1.6, 1.7
+;  check static => path
+;     this is the rule to check static class usages in classes under given path
+;  - check static => path
+;     exclude following paths from the check
+;  allow static class NAME
+;     allow use of given class (by starts-with) from static context
 ;
 ;  see example below
 ;

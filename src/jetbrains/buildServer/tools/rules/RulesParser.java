@@ -25,6 +25,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static jetbrains.buildServer.tools.rules.PathRules.Builder;
 
@@ -41,30 +43,26 @@ public class RulesParser {
 
     final List<Parser> parsers = new ArrayList<Parser>();
 
-    parsers.add(new Parser() {
-      public boolean parse(@NotNull String line) {
-        if (!line.startsWith("allow static class")) return false;
-        final String clazz = line.substring("allow static class".length()).trim();
-        if (clazz.length() > 0) {
-          myAllowedStaticClasses.addRule(clazz);
-        }
-        return true;
-      }
-    });
-    parsers.add(new Parser() {
-      public boolean parse(@NotNull String line) throws IOException {
-        if (!line.startsWith("check static =>")) return false;
+    parsers.add(
+            new RegexParser(Pattern.compile("allow\\s+static\\s+class\\s+(.+)\\s*")) {
+              @Override
+              protected boolean parse(@NotNull Matcher matcher) {
+                final String clazz = matcher.group(1).trim();
+                myAllowedStaticClasses.addRule(clazz);
+                return true;
+              }
+            });
 
-        String path = line.substring("check static =>".length()).trim();
+    parsers.add(new RegexParser(Pattern.compile("check\\s+static\\s*=>\\s*(.*)\\s*")) {
+      protected boolean parse(@NotNull Matcher line) throws IOException {
+        String path = line.group(1).trim();
         myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
         return true;
       }
     });
-    parsers.add(new Parser() {
-      public boolean parse(@NotNull String line) throws IOException {
-        if (!line.startsWith("- check static =>")) return false;
-
-        String path = line.substring("- check static =>".length()).trim();
+    parsers.add(new RegexParser(Pattern.compile("-\\s?check\\s+static\\s*=\\s*>(.*)\\s*")) {
+      protected boolean parse(@NotNull Matcher line) throws IOException {
+        String path = line.group(1).trim();
         myStatics.exclude(new PathRule(resolvePath(scanHome, path)));
         return true;
       }
@@ -146,4 +144,18 @@ public class RulesParser {
     boolean parse(@NotNull String line) throws IOException;
   }
 
+  private abstract static class RegexParser implements Parser {
+    private final Pattern myRegex;
+
+    protected RegexParser(@NotNull Pattern regex) {
+      myRegex = regex;
+    }
+
+    public boolean parse(@NotNull final String line) throws IOException {
+      final Matcher matcher = myRegex.matcher(line);
+      return matcher.matches() && parse(matcher);
+    }
+
+    protected abstract boolean parse(@NotNull Matcher matcher) throws IOException;
+  }
 }

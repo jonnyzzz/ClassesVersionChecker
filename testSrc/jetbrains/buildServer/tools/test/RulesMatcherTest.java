@@ -105,10 +105,9 @@ public class RulesMatcherTest extends RulesBaseTestCase {
     assertEquals(getVersionRule(s, mockFile("aaa/bbb/ccc/ddd.jar!e/d/sd")), Java_1_7);
   }
 
-
   @Test
   public void testStaticRules() throws IOException {
-    final PathSettings s = parseConfig("check static => aaa/bbb/ccc/ddd.jar");
+    final PathSettings s = parseConfig("check static => aaa/bbb/ccc/ddd.jar\n - check static => aaa/bbb/ccc/ddd.jar!z");
 
     assertNull(getStaticRule(s, mockFile("aaa")));
     assertNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
@@ -123,6 +122,8 @@ public class RulesMatcherTest extends RulesBaseTestCase {
     assertNotNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar")));
     assertNotNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jarddd")));
     assertNotNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!e/d/sd")));
+
+    assertNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!zzz")));
   }
 
 }

@@ -40,21 +40,11 @@ public class RulesParser {
     try {
       final Scanner sc = new Scanner(rdr);
       while(sc.hasNextLine()) {
-        final String line = sc.nextLine().trim();
+        String line = sc.nextLine().trim();
         if (line.length() == 0 || line.startsWith(";")) {
           continue;
         }
-
-        if (line.startsWith("-")) {
-          String path = line.substring(1).trim();
-          if (path.startsWith("=>")) {
-            path = path.substring(2).trim();
-          } else {
-            throw new IOException("Failed to parse - rule: " + line);
-          }
-          myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
-          continue;
-        }
+        line = line.trim();
 
         if (line.startsWith("allow static class")) {
           String clazz = line.substring("allow static class".length()).trim();
@@ -67,6 +57,23 @@ public class RulesParser {
         if (line.startsWith("check static =>")) {
           String path = line.substring("check static =>".length()).trim();
           myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
+          continue;
+        }
+
+        if (line.startsWith("- check static =>")) {
+          String path = line.substring("- check static =>".length()).trim();
+          myStatics.exclude(new PathRule(resolvePath(scanHome, path)));
+          continue;
+        }
+
+        if (line.startsWith("-")) {
+          String path = line.substring(1).trim();
+          if (path.startsWith("=>")) {
+            path = path.substring(2).trim();
+          } else {
+            throw new IOException("Failed to parse - rule: " + line);
+          }
+          myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
           continue;
         }
 

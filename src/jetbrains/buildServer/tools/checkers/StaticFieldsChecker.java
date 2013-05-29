@@ -3,6 +3,7 @@ package jetbrains.buildServer.tools.checkers;
 import jetbrains.buildServer.tools.CheckAction;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
+import jetbrains.buildServer.tools.rules.StaticRuleSettings;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.*;
 
@@ -15,6 +16,12 @@ import java.io.InputStream;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public class StaticFieldsChecker implements CheckAction {
+  private final StaticRuleSettings mySettings;
+
+  public StaticFieldsChecker(@NotNull final StaticRuleSettings settings) {
+    mySettings = settings;
+  }
+
   public void process(@NotNull final ScanFile file, @NotNull final ErrorReporting reporting) throws IOException {
     if (!file.getName().endsWith(".class")) return;
 
@@ -51,7 +58,7 @@ public class StaticFieldsChecker implements CheckAction {
         if (sort != Type.OBJECT && sort != Type.METHOD) return;
         if (sort == Type.METHOD) return;
         if (type.getClassName().equals(String.class.getName())) return;
-
+        if (mySettings.isClassAllowed(type.getClassName())) return;
 
         reporting.postCheckError(file, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + type.getClassName() + "'");
       }

@@ -25,6 +25,6 @@ public class StaticCheckRule extends PathRule implements CheckHolder {
 
   @NotNull
   public CheckAction getCheckAction() {
-    return new StaticFieldsChecker();
+    return new StaticFieldsChecker(mySettings);
   }
 }

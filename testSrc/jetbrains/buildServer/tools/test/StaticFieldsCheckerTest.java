@@ -3,6 +3,7 @@ package jetbrains.buildServer.tools.test;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.checkers.StaticFieldsChecker;
+import jetbrains.buildServer.tools.rules.StaticRuleSettings;
 import jetbrains.buildServer.tools.util.ClassPathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -40,7 +41,7 @@ public class StaticFieldsCheckerTest {
   public void setUp() {
     m = new Mockery();
     myErrors = m.mock(ErrorReporting.class);
-    myChecker = new StaticFieldsChecker();
+    myChecker = new StaticFieldsChecker(new StaticRuleSettings());
     myLoggerErrors = new ArrayList<String>();
     m.checking(new Expectations(){{
       allowing(myErrors).postCheckError(with(any(ScanFile.class)), with(any(String.class)));

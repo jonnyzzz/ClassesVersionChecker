@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import static jetbrains.buildServer.tools.rules.PathRules.Builder;
@@ -37,53 +39,44 @@ public class RulesParser {
     final Builder<StaticCheckRule> myStatics = new Builder<StaticCheckRule>();
     final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
 
-    try {
-      final Scanner sc = new Scanner(rdr);
-      while(sc.hasNextLine()) {
-        String line = sc.nextLine().trim();
-        if (line.length() == 0 || line.startsWith(";")) {
-          continue;
-        }
-        line = line.trim();
+    final List<Parser> parsers = new ArrayList<Parser>();
 
-        if (line.startsWith("allow static class")) {
-          String clazz = line.substring("allow static class".length()).trim();
-          if (clazz.length() > 0) {
-            myAllowedStaticClasses.addRule(clazz);
-          }
-          continue;
+    parsers.add(new Parser() {
+      public boolean parse(@NotNull String line) {
+        if (!line.startsWith("allow static class")) return false;
+        final String clazz = line.substring("allow static class".length()).trim();
+        if (clazz.length() > 0) {
+          myAllowedStaticClasses.addRule(clazz);
         }
+        return true;
+      }
+    });
+    parsers.add(new Parser() {
+      public boolean parse(@NotNull String line) throws IOException {
+        if (!line.startsWith("check static =>")) return false;
 
-        if (line.startsWith("check static =>")) {
-          String path = line.substring("check static =>".length()).trim();
-          myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
-          continue;
-        }
+        String path = line.substring("check static =>".length()).trim();
+        myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
+        return true;
+      }
+    });
+    parsers.add(new Parser() {
+      public boolean parse(@NotNull String line) throws IOException {
+        if (!line.startsWith("- check static =>")) return false;
 
-        if (line.startsWith("- check static =>")) {
-          String path = line.substring("- check static =>".length()).trim();
-          myStatics.exclude(new PathRule(resolvePath(scanHome, path)));
-          continue;
-        }
+        String path = line.substring("- check static =>".length()).trim();
+        myStatics.exclude(new PathRule(resolvePath(scanHome, path)));
+        return true;
+      }
+    });
 
-        if (line.startsWith("-")) {
-          String path = line.substring(1).trim();
-          if (path.startsWith("=>")) {
-            path = path.substring(2).trim();
-          } else {
-            throw new IOException("Failed to parse - rule: " + line);
-          }
-          myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
-          continue;
-        }
-
-        boolean parsed = false;
-        for (JavaVersion v : JavaVersion.values()) {
+    for (final JavaVersion v : JavaVersion.values()) {
+      parsers.add(new Parser() {
+        public boolean parse(@NotNull String line) throws IOException {
           final String prefix = v.getShortName();
-          if (!line.startsWith(prefix)) continue;
+          if (!line.startsWith(prefix)) return false;
 
           String part = line.substring(prefix.length()).trim();
-
           if (part.startsWith("=>")) {
             part = part.substring(2).trim();
           } else {
@@ -91,12 +84,43 @@ public class RulesParser {
           }
 
           myVersions.include(new VersionRule(resolvePath(scanHome, part), v));
-          parsed = true;
-          break;
+          return true;
         }
-        if (parsed) continue;
+      });
+    }
+    parsers.add(new Parser() {
+      public boolean parse(@NotNull String line) throws IOException {
+        if (!line.startsWith("-")) return false;
 
+        String path = line.substring(1).trim();
+        if (path.startsWith("=>")) {
+          path = path.substring(2).trim();
+        } else {
+          throw new IOException("Failed to parse - rule: " + line);
+        }
+        myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
+        return true;
+      }
+    });
 
+    try {
+      final Scanner sc = new Scanner(rdr);
+      while (sc.hasNextLine()) {
+        String line = sc.nextLine().trim();
+        if (line.length() == 0 || line.startsWith(";")) {
+          continue;
+        }
+        line = line.trim();
+
+        boolean handled = false;
+        for (Parser parser : parsers) {
+          if (parser.parse(line)) {
+            handled = true;
+            break;
+          }
+        }
+
+        if (handled) continue;
         throw new IOException("Unexpected string: '" + line + "' in config");
       }
     } finally {
@@ -116,6 +140,10 @@ public class RulesParser {
     }
 
     return new File(home, path).getCanonicalPath();
+  }
+
+  private interface Parser {
+    boolean parse(@NotNull String line) throws IOException;
   }
 
 }

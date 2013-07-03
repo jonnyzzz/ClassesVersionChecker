@@ -49,13 +49,17 @@ public class ReportErrors {
   }
 
   public void render(@NotNull RenderMode mode, @NotNull final LogWriter writer) {
+    writer.println("Total errors: " + getNumberOfErrors());
+    writer.println();
+    writer.println();
+
     if (!myGenericErrorsMessageToFile.isEmpty()) {
       writer.println("Generic errors (" + myGenericErrorsMessageToFile.getValuesSize() + "):");
       renderGenericErrors(writer.offset());
       writer.println();
     }
 
-    if (!myCheckErrorToFile.isEmpty()) {
+    if (mode == RenderMode.SHORT && !myCheckErrorToFile.isEmpty()) {
       final int top = 100;
       writer.println("Top " + top + " errors: ");
       renderTopErrors(writer, top);

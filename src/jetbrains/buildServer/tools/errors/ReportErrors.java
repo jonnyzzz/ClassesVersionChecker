@@ -48,13 +48,13 @@ public class ReportErrors {
 
   public void render(@NotNull RenderMode mode, @NotNull final LogWriter writer) {
     if (!myGenericErrorsMessageToFile.isEmpty()) {
-      writer.println("Generic errors:");
+      writer.println("Generic errors (" + myGenericErrorsMessageToFile.getValuesSize() + "):");
       renderGenericErrors(writer.offset());
       writer.println();
     }
 
     if (!myCheckErrors.isEmpty()) {
-      writer.println("Check errors:");
+      writer.println("Check errors (" + getNumberOfCheckErrors() + "):");
       renderCheckErrors(mode, writer.offset());
       writer.println();
     }
@@ -82,7 +82,11 @@ public class ReportErrors {
   }
 
   public int getNumberOfErrors() {
-    int sz = myGenericErrorsMessageToFile.getValuesSize();
+    return myGenericErrorsMessageToFile.getValuesSize() + getNumberOfCheckErrors();
+  }
+
+  public int getNumberOfCheckErrors() {
+    int sz = 0;
     for (ReportKindError error : myCheckErrors.values()) {
       sz += error.getNumberOfErrors();
     }

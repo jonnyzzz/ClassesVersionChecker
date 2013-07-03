@@ -33,7 +33,7 @@ public class ReportKindError {
   public void render(@NotNull RenderMode mode, @NotNull LogWriter writer) {
     if (myShortErrors.isEmpty()) return;
 
-    writer.println(myKind);
+    writer.println(myKind + " (" + getNumberOfErrors() + ")");
     final LogWriter offset = writer.offset();
 
     for (ReportShortFileError error : myShortErrors.values()) {

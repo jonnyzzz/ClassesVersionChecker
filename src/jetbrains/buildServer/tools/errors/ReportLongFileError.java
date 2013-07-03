@@ -25,7 +25,7 @@ public class ReportLongFileError {
   public void render(@NotNull RenderMode mode, @NotNull LogWriter writer) {
     if (myErrors.isEmpty()) return;
 
-    writer.println(myLongFile);
+    writer.println(myLongFile + " (" + getNumberOfErrors() + ")");
     final LogWriter offset = writer.offset();
     for (String error : myErrors) {
       offset.println(error);

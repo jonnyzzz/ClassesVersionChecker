@@ -205,7 +205,7 @@ public class FilesProcessorTest extends RulesBaseTestCase {
   @Test
   public void test_broken_class() throws IOException {
     saveFile("foo.class", "this is not a right class".getBytes());
-    expectGenericError("foo.class");
+    expectCheckError("foo.class");
     runTest("1.7 => ");
   }
 

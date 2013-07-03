@@ -17,6 +17,7 @@
 package jetbrains.buildServer.tools.checkers;
 
 import jetbrains.buildServer.tools.CheckAction;
+import jetbrains.buildServer.tools.ErrorKind;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import jetbrains.buildServer.tools.ScanFile;
@@ -56,12 +57,12 @@ public class ClassFileChecker implements CheckAction {
       final JavaVersion version = JavaVersion.find(v);
 
       if (version == null) {
-        reporting.postCheckError(file, "version is unknown ( " + v + ")");
+        reporting.postCheckError(file, ErrorKind.VERSION, "version is unknown ( " + v + ")");
         return;
       }
 
       if (!version.canRunOn(myVersion)) {
-        reporting.postCheckError(file, "version is " + version + " but expected to be <= " + myVersion);
+        reporting.postCheckError(file, ErrorKind.VERSION, "version is " + version + " but expected to be <= " + myVersion);
       }
 
     } finally {
@@ -76,7 +77,7 @@ public class ClassFileChecker implements CheckAction {
     }
 
     if (data[0] != 0xCA || data[1] != 0xFE || data[2] != 0xBA || data[3] != 0xBE) {
-      reporting.postCheckError(file, "Class file must start with 0xCAFEBABE, but was: " + byteToHex(data));
+      reporting.postCheckError(file, ErrorKind.VERSION, "Class file must start with 0xCAFEBABE, but was: " + byteToHex(data));
       return false;
     }
 

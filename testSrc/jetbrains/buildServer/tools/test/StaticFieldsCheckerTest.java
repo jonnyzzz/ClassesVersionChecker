@@ -1,5 +1,6 @@
 package jetbrains.buildServer.tools.test;
 
+import jetbrains.buildServer.tools.ErrorKind;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.checkers.StaticFieldsChecker;
@@ -44,10 +45,10 @@ public class StaticFieldsCheckerTest {
     myChecker = new StaticFieldsChecker(new StaticRuleSettings());
     myLoggerErrors = new ArrayList<String>();
     m.checking(new Expectations(){{
-      allowing(myErrors).postCheckError(with(any(ScanFile.class)), with(any(String.class)));
+      allowing(myErrors).postCheckError(with(any(ScanFile.class)), with(equal(ErrorKind.STATIC)), with(any(String.class)));
       will(new CustomAction("log") {
         public Object invoke(Invocation invocation) throws Throwable {
-          final String error = (String) invocation.getParameter(1);
+          final String error = (String) invocation.getParameter(2);
           myLoggerErrors.add(error);
           System.out.println(error);
           return null;

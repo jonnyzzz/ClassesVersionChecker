@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.tools.errors;
 
-import jetbrains.buildServer.tools.Arguments;
-import jetbrains.buildServer.tools.ErrorReporting;
-import jetbrains.buildServer.tools.MultiMap;
-import jetbrains.buildServer.tools.ScanFile;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.rules.PathRule;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +54,7 @@ public class ErrorsCollection implements ErrorReporting {
     }
   }
 
-  public void postCheckError(@NotNull ScanFile file, @NotNull String error) {
+  public void postCheckError(@NotNull ScanFile file, @NotNull ErrorKind kind, @NotNull String error) {
     updateShortErrors(file, error);
     synchronized (myFileToMessage) {
       myFileToMessage.putValue(path(file), error);

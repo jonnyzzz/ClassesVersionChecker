@@ -16,13 +16,14 @@
 
 package jetbrains.buildServer.tools.test;
 
+import jetbrains.buildServer.tools.ErrorKind;
 import jetbrains.buildServer.tools.FilesProcessor;
 import jetbrains.buildServer.tools.java.JavaCheckSettings;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -37,15 +38,15 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip4_1_6() throws IOException {
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class");
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class", ErrorKind.VERSION);
     writeAllVersionClassesToZip4();
     runTest("1.6 =>");
   }
 
   @Test
   public void test_class_in_zip4_1_5() throws IOException {
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class");
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip4();
     runTest("1.5 =>");
@@ -53,9 +54,9 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip4_1_4() throws IOException {
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!49.class");
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!49.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip4();
     runTest("1.4 =>");
@@ -63,10 +64,10 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip4_1_3() throws IOException {
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!49.class");
-    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!48.class");
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!50.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!49.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!a/zipInZip.jar!q/zip3Zip.jar!z/zip4Zip.jar!48.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip4();
     runTest("1.3 =>");
@@ -81,15 +82,15 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip_1_6() throws IOException {
-    expectCheckError("foo.zip!51.class");
+    expectCheckError("foo.zip!51.class", ErrorKind.VERSION);
     writeAllVersionClassesToZip();
     runTest("1.6 =>");
   }
 
   @Test
   public void test_class_in_zip_1_5() throws IOException {
-    expectCheckError("foo.zip!51.class");
-    expectCheckError("foo.zip!50.class");
+    expectCheckError("foo.zip!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!50.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip();
     runTest("1.5 =>");
@@ -97,9 +98,9 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip_1_4() throws IOException {
-    expectCheckError("foo.zip!51.class");
-    expectCheckError("foo.zip!50.class");
-    expectCheckError("foo.zip!49.class");
+    expectCheckError("foo.zip!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!50.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!49.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip();
     runTest("1.4 =>");
@@ -107,10 +108,10 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_class_in_zip_1_3() throws IOException {
-    expectCheckError("foo.zip!51.class");
-    expectCheckError("foo.zip!50.class");
-    expectCheckError("foo.zip!49.class");
-    expectCheckError("foo.zip!48.class");
+    expectCheckError("foo.zip!51.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!50.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!49.class", ErrorKind.VERSION);
+    expectCheckError("foo.zip!48.class", ErrorKind.VERSION);
 
     writeAllVersionClassesToZip();
     runTest("1.3 =>");
@@ -156,24 +157,24 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_6() throws IOException {
-    expectCheckError("51.class");
+    expectCheckError("51.class", ErrorKind.VERSION);
     writeAllVersionClasses();
     runTest("1.6 =>");
   }
 
   @Test
   public void test_all_1_5() throws IOException {
-    expectCheckError("51.class");
-    expectCheckError("50.class");
+    expectCheckError("51.class", ErrorKind.VERSION);
+    expectCheckError("50.class", ErrorKind.VERSION);
     writeAllVersionClasses();
     runTest("1.5 =>");
   }
 
   @Test
   public void test_all_1_4() throws IOException {
-    expectCheckError("51.class");
-    expectCheckError("50.class");
-    expectCheckError("49.class");
+    expectCheckError("51.class", ErrorKind.VERSION);
+    expectCheckError("50.class", ErrorKind.VERSION);
+    expectCheckError("49.class", ErrorKind.VERSION);
 
     writeAllVersionClasses();
     runTest("1.4 =>");
@@ -181,10 +182,10 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_3() throws IOException {
-    expectCheckError("51.class");
-    expectCheckError("50.class");
-    expectCheckError("49.class");
-    expectCheckError("48.class");
+    expectCheckError("51.class", ErrorKind.VERSION);
+    expectCheckError("50.class", ErrorKind.VERSION);
+    expectCheckError("49.class", ErrorKind.VERSION);
+    expectCheckError("48.class", ErrorKind.VERSION);
 
     writeAllVersionClasses();
     runTest("1.3 =>");
@@ -192,11 +193,11 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_2() throws IOException {
-    expectCheckError("51.class");
-    expectCheckError("50.class");
-    expectCheckError("49.class");
-    expectCheckError("48.class");
-    expectCheckError("47.class");
+    expectCheckError("51.class", ErrorKind.VERSION);
+    expectCheckError("50.class", ErrorKind.VERSION);
+    expectCheckError("49.class", ErrorKind.VERSION);
+    expectCheckError("48.class", ErrorKind.VERSION);
+    expectCheckError("47.class", ErrorKind.VERSION);
 
     writeAllVersionClasses();
     runTest("1.2 =>");
@@ -205,7 +206,7 @@ public class FilesProcessorTest extends RulesBaseTestCase {
   @Test
   public void test_broken_class() throws IOException {
     saveFile("foo.class", "this is not a right class".getBytes());
-    expectCheckError("foo.class");
+    expectCheckError("foo.class", ErrorKind.VERSION);
     runTest("1.7 => ");
   }
 
@@ -248,7 +249,7 @@ public class FilesProcessorTest extends RulesBaseTestCase {
 
   @Test
   public void test_no_rule_specified() throws IOException {
-    expectCheckError("some/file.class");
+    expectCheckError("some/file.class", ErrorKind.PATTERN);
     saveFile("some/file.class", "aaa".getBytes());
     saveFile("foo/aaa.class", classBytes(10));
 

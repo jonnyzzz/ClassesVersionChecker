@@ -1,6 +1,7 @@
 package jetbrains.buildServer.tools.checkers;
 
 import jetbrains.buildServer.tools.CheckAction;
+import jetbrains.buildServer.tools.ErrorKind;
 import jetbrains.buildServer.tools.ErrorReporting;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.rules.StaticRuleSettings;
@@ -50,8 +51,8 @@ public class StaticFieldsChecker implements CheckAction {
         final Type type = Type.getType(desc);
 
         if ((Opcodes.ACC_FINAL & access) == 0) {
-          reporting.postCheckError(file, "Static usage of '" + fieldType(desc) + "'");
-          reporting.postCheckError(file, "Class '" + myClassName + "' contains non-final static field '" + name + "'");
+          reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'");
+          reporting.postCheckError(file, ErrorKind.STATIC, "Class '" + myClassName + "' contains non-final static field '" + name + "'");
           return;
         }
 
@@ -63,8 +64,8 @@ public class StaticFieldsChecker implements CheckAction {
         if (type.getClassName().equals(String.class.getName())) return;
         if (mySettings.isClassAllowed(type.getClassName())) return;
 
-        reporting.postCheckError(file, "Static usage of '" + fieldType(desc) + "'");
-        reporting.postCheckError(file, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + fieldType(desc) + "'");
+        reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'");
+        reporting.postCheckError(file, ErrorKind.STATIC, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + fieldType(desc) + "'");
       }
     }, 0);
   }

@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.tools.java;
 
-import jetbrains.buildServer.tools.CheckAction;
-import jetbrains.buildServer.tools.CheckSettings;
-import jetbrains.buildServer.tools.ErrorReporting;
-import jetbrains.buildServer.tools.ScanFile;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.rules.CheckHolder;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +50,7 @@ public class JavaCheckSettings implements CheckSettings {
 
     Collection<? extends CheckHolder> modes = myRules.getFileCheckMode(file);
     if (modes.isEmpty()) {
-      error.postCheckError(file, "No rule for file");
+      error.postCheckError(file, ErrorKind.PATTERN, "No rule for file");
       return Collections.emptyList();
     }
 

@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.tools.test;
 
-import jetbrains.buildServer.tools.BaseTestCase;
-import jetbrains.buildServer.tools.Continuation;
-import jetbrains.buildServer.tools.ErrorReporting;
-import jetbrains.buildServer.tools.ScanFile;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
 import jetbrains.buildServer.tools.rules.VersionRule;
@@ -157,9 +154,9 @@ public class RulesBaseTestCase extends BaseTestCase {
     }});
   }
 
-  public void expectCheckError(@NotNull final String name) {
+  public void expectCheckError(@NotNull final String name, @NotNull final ErrorKind kind) {
     m.checking(new Expectations(){{
-      oneOf(rep).postCheckError(with(file(name)), with(any(String.class)));
+      oneOf(rep).postCheckError(with(file(name)), with(equal(kind)), with(any(String.class)));
     }});
   }
 

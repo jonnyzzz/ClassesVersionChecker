@@ -30,7 +30,7 @@ public class MultiMap<K, V> {
   }
 
   protected Map<K, List<V>> createMap() {
-    return new java.util.HashMap<K, List<V>>();
+    return new java.util.TreeMap<K, List<V>>();
   }
 
   protected List<V> createCollection() {

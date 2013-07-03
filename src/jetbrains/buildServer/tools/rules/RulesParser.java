@@ -40,7 +40,7 @@ public class RulesParser {
   public RulesParser(@NotNull final File scanHome) {
     final List<Parser> parsers = new ArrayList<Parser>();
 
-    parsers.add(new RegexParser(Pattern.compile("include\\s+(.*)\\s+")) {
+    parsers.add(new RegexParser(Pattern.compile("include\\s+(.+)\\s*")) {
       @Override
       protected boolean parse(@NotNull Matcher matcher) throws IOException {
         if (myConfigs.isEmpty()) return false;
@@ -124,7 +124,7 @@ public class RulesParser {
       return parseConfig(rdr);
     } catch(IOException e) {
       System.err.println("Failed to parse settings from: " + config + ". " + e.getMessage());
-      throw new RuntimeException("No settings found");
+      throw new RuntimeException("No settings found in: " + config);
     } finally {
       myConfigs.poll();
       try {

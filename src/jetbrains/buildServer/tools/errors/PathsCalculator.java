@@ -33,6 +33,9 @@ public class PathsCalculator {
 
   @NotNull
   public String shortPath(@NotNull ScanFile file) {
-    return path(file).split("!")[0];
+    String path = path(file);
+    int x = path.lastIndexOf('!');
+    if (x <= 0) return path;
+    return path.substring(0, x);
   }
 }

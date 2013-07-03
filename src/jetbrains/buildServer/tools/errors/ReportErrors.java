@@ -7,8 +7,7 @@ import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.rules.PathRule;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created 03.07.13 21:00
@@ -18,6 +17,7 @@ import java.util.Map;
 public class ReportErrors {
   private final PathsCalculator myPaths;
   private final MultiMap<String, String> myGenericErrorsMessageToFile = new MultiMap<String, String>();
+  private final MultiMap<String, String> myCheckErrorToFile = new MultiMap<String, String>();
   private final LazyMap<ErrorKind, ReportKindError> myCheckErrors = new LazyMap<ErrorKind, ReportKindError>() {
     @NotNull
     @Override
@@ -34,6 +34,7 @@ public class ReportErrors {
                             @NotNull final ErrorKind kind,
                             @NotNull final String message) {
     myCheckErrors.get(kind).addCheckError(file, message);
+    myCheckErrorToFile.putValue(message, myPaths.shortPath(file));
   }
 
   public void addGenericError(@NotNull final ScanFile file,
@@ -53,12 +54,40 @@ public class ReportErrors {
       writer.println();
     }
 
+    if (!myCheckErrorToFile.isEmpty()) {
+      final int top = 100;
+      writer.println("Top " + top + " errors: ");
+      renderTopErrors(writer, top);
+      writer.println();
+    }
+
     if (!myCheckErrors.isEmpty()) {
       writer.println("Check errors (" + getNumberOfCheckErrors() + "):");
       renderCheckErrors(mode, writer.offset());
       writer.println();
     }
 
+  }
+
+  private void renderTopErrors(@NotNull final LogWriter writer, final int top) {
+    final LogWriter offset = writer.offset();
+    final List<String> keys = new ArrayList<String>(myCheckErrorToFile.keySet());
+    Collections.sort(keys, new Comparator<String>() {
+      public int compare(@NotNull String o1, @NotNull String o2) {
+        int c1 = myCheckErrorToFile.get(o1).size();
+        int c2 = myCheckErrorToFile.get(o2).size();
+
+        if (c1 < c2) return 1;
+        if (c1 > c2) return -1;
+        return o1.compareToIgnoreCase(o2);
+      }
+    });
+
+    final Iterator<String> it = keys.iterator();
+    for(int i = 0; i < top && it.hasNext(); i++) {
+      String err = it.next();
+      offset.println(err + " (" + myCheckErrorToFile.get(err).size() + ")");
+    }
   }
 
   private void renderCheckErrors(@NotNull final RenderMode mode, @NotNull final LogWriter writer) {

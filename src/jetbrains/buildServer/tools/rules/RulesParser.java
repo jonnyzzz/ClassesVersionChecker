@@ -20,9 +20,7 @@ import jetbrains.buildServer.tools.java.JavaVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,11 +34,21 @@ public class RulesParser {
   private final Builder<VersionRule> myVersions = new Builder<VersionRule>();
   private final Builder<StaticCheckRule> myStatics = new Builder<StaticCheckRule>();
   private final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
-  private final List<Parser> parsers = new ArrayList<Parser>();
-  private final File scanHome;
+  private final List<Parser> myParsers;
+  private final Queue<File> myConfigs = new ArrayDeque<File>();
 
   public RulesParser(@NotNull final File scanHome) {
-    this.scanHome = scanHome;
+    final List<Parser> parsers = new ArrayList<Parser>();
+
+    parsers.add(new RegexParser(Pattern.compile("include\\s+(.*)\\s+")) {
+      @Override
+      protected boolean parse(@NotNull Matcher matcher) throws IOException {
+        if (myConfigs.isEmpty()) return false;
+        parseConfig(new File(myConfigs.peek().getParentFile(), matcher.group(1).trim()));
+        return true;
+      }
+    });
+
     parsers.add(
             new RegexParser(Pattern.compile("allow\\s+static\\s+class\\s+(.+)\\s*")) {
               @Override
@@ -98,6 +106,8 @@ public class RulesParser {
         return true;
       }
     });
+
+    myParsers = Collections.unmodifiableList(parsers);
   }
 
   @NotNull
@@ -109,12 +119,14 @@ public class RulesParser {
   public RulesParser parseConfig(@NotNull final File config) {
     Reader rdr = null;
     try {
+      myConfigs.add(config);
       rdr = new InputStreamReader(new FileInputStream(config), "utf-8");
       return parseConfig(rdr);
     } catch(IOException e) {
       System.err.println("Failed to parse settings from: " + config + ". " + e.getMessage());
       throw new RuntimeException("No settings found");
     } finally {
+      myConfigs.poll();
       try {
         if (rdr != null) rdr.close();
       } catch (IOException e) {
@@ -135,7 +147,7 @@ public class RulesParser {
         line = line.trim();
 
         boolean handled = false;
-        for (Parser parser : parsers) {
+        for (Parser parser : myParsers) {
           if (parser.parse(line)) {
             handled = true;
             break;

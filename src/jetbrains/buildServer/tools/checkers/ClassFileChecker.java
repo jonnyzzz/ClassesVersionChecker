@@ -76,7 +76,7 @@ public class ClassFileChecker implements CheckAction {
     }
 
     if (data[0] != 0xCA || data[1] != 0xFE || data[2] != 0xBA || data[3] != 0xBE) {
-      reporting.postError(file, "Class file must start with 0xCAFEBABE, but was: " + byteToHex(data));
+      reporting.postCheckError(file, "Class file must start with 0xCAFEBABE, but was: " + byteToHex(data));
       return false;
     }
 

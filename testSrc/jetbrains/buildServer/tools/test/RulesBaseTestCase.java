@@ -60,8 +60,9 @@ public class RulesBaseTestCase extends BaseTestCase {
     m.assertIsSatisfied();
   }
 
+  @NotNull
   protected PathSettings parseConfig(@NotNull final String configText) throws IOException {
-    return RulesParser.parseConfig(myHome, new StringReader(configText));
+    return new RulesParser(myHome).parseConfig(new StringReader(configText)).build();
   }
 
   @NotNull

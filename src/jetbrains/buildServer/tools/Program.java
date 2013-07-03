@@ -80,20 +80,6 @@ public class Program {
 
   @NotNull
   private static PathSettings parseRules(@NotNull Arguments args)  {
-    Reader rdr = null;
-    try {
-      rdr = new InputStreamReader(new FileInputStream(args.getConfigFile()), "utf-8");
-      return RulesParser.parseConfig(args.getScanHome(), rdr);
-    } catch(IOException e) {
-      System.err.println("Failed to parse settings. " + e.getMessage());
-      throw new RuntimeException("No settings found");
-    } finally {
-      try {
-        if (rdr != null) rdr.close();
-      } catch (IOException e) {
-        //NOP
-      }
-    }
+    return new RulesParser(args.getScanHome()).parseConfig(args.getConfigFile()).build();
   }
-
 }

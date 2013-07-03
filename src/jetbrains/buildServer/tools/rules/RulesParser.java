@@ -19,9 +19,7 @@ package jetbrains.buildServer.tools.rules;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -35,14 +33,14 @@ import static jetbrains.buildServer.tools.rules.PathRules.Builder;
  *         Date: 08.11.11 18:07
  */
 public class RulesParser {
-  @NotNull
-  public static PathSettings parseConfig(@NotNull final File scanHome, @NotNull final Reader rdr) throws IOException {
-    final Builder<VersionRule> myVersions = new Builder<VersionRule>();
-    final Builder<StaticCheckRule> myStatics = new Builder<StaticCheckRule>();
-    final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
+  private final Builder<VersionRule> myVersions = new Builder<VersionRule>();
+  private final Builder<StaticCheckRule> myStatics = new Builder<StaticCheckRule>();
+  private final StaticRuleSettings myAllowedStaticClasses = new StaticRuleSettings();
+  private final List<Parser> parsers = new ArrayList<Parser>();
+  private final File scanHome;
 
-    final List<Parser> parsers = new ArrayList<Parser>();
-
+  public RulesParser(@NotNull final File scanHome) {
+    this.scanHome = scanHome;
     parsers.add(
             new RegexParser(Pattern.compile("allow\\s+static\\s+class\\s+(.+)\\s*")) {
               @Override
@@ -100,7 +98,33 @@ public class RulesParser {
         return true;
       }
     });
+  }
 
+  @NotNull
+  public PathSettings build() {
+    return new PathSettings(myVersions.build(), myStatics.build());
+  }
+
+  @NotNull
+  public RulesParser parseConfig(@NotNull final File config) {
+    Reader rdr = null;
+    try {
+      rdr = new InputStreamReader(new FileInputStream(config), "utf-8");
+      return parseConfig(rdr);
+    } catch(IOException e) {
+      System.err.println("Failed to parse settings from: " + config + ". " + e.getMessage());
+      throw new RuntimeException("No settings found");
+    } finally {
+      try {
+        if (rdr != null) rdr.close();
+      } catch (IOException e) {
+        //NOP
+      }
+    }
+  }
+
+  @NotNull
+  public RulesParser parseConfig(@NotNull final Reader rdr) throws IOException {
     try {
       final Scanner sc = new Scanner(rdr);
       while (sc.hasNextLine()) {
@@ -124,8 +148,7 @@ public class RulesParser {
     } finally {
       rdr.close();
     }
-
-    return new PathSettings(myVersions.build(), myStatics.build());
+    return this;
   }
 
   private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {

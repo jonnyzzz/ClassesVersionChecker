@@ -32,9 +32,10 @@ public class ReportErrors {
 
   public void addCheckError(@NotNull final ScanFile file,
                             @NotNull final ErrorKind kind,
+                            @NotNull final String shortError,
                             @NotNull final String message) {
     myCheckErrors.get(kind).addCheckError(file, message);
-    myCheckErrorToFile.putValue(message, myPaths.shortPath(file));
+    myCheckErrorToFile.putValue(shortError, myPaths.path(file));
   }
 
   public void addGenericError(@NotNull final ScanFile file,

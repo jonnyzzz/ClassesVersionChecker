@@ -51,8 +51,7 @@ public class StaticFieldsChecker implements CheckAction {
         final Type type = Type.getType(desc);
 
         if ((Opcodes.ACC_FINAL & access) == 0) {
-          reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'");
-          reporting.postCheckError(file, ErrorKind.STATIC, "Class '" + myClassName + "' contains non-final static field '" + name + "'");
+          reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'", "Class '" + myClassName + "' contains non-final static field '" + name + "'");
           return;
         }
 
@@ -64,8 +63,7 @@ public class StaticFieldsChecker implements CheckAction {
         if (type.getClassName().equals(String.class.getName())) return;
         if (mySettings.isClassAllowed(type.getClassName())) return;
 
-        reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'");
-        reporting.postCheckError(file, ErrorKind.STATIC, "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + fieldType(desc) + "'");
+        reporting.postCheckError(file, ErrorKind.STATIC, "Static usage of '" + fieldType(desc) + "'", "Class '" + myClassName + "' contains final static field '" + name + "' of type '" + fieldType(desc) + "'");
       }
     }, 0);
   }

@@ -45,10 +45,14 @@ public class StaticFieldsCheckerTest {
     myChecker = new StaticFieldsChecker(new StaticRuleSettings());
     myLoggerErrors = new ArrayList<String>();
     m.checking(new Expectations(){{
-      allowing(myErrors).postCheckError(with(any(ScanFile.class)), with(equal(ErrorKind.STATIC)), with(any(String.class)));
+      allowing(myErrors).postCheckError(with(any(ScanFile.class)), with(equal(ErrorKind.STATIC)), with(any(String.class)), with(any(String.class)));
       will(new CustomAction("log") {
         public Object invoke(Invocation invocation) throws Throwable {
-          final String error = (String) invocation.getParameter(2);
+          String error = (String) invocation.getParameter(2);
+          myLoggerErrors.add(error);
+          System.out.println(error);
+
+          error = (String) invocation.getParameter(3);
           myLoggerErrors.add(error);
           System.out.println(error);
           return null;

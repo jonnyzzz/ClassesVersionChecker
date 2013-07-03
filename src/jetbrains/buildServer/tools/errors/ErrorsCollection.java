@@ -38,8 +38,15 @@ public class ErrorsCollection implements ErrorReporting {
     myReport = new ReportErrors(new PathsCalculator(arguments));
   }
 
-  public synchronized void postCheckError(@NotNull ScanFile file, @NotNull ErrorKind kind, @NotNull String error) {
-    myReport.addCheckError(file, kind, error);
+  public void postCheckError(@NotNull ScanFile file, @NotNull ErrorKind kind, @NotNull String error) {
+    myReport.addCheckError(file, kind, error, error);
+  }
+
+  public synchronized void postCheckError(@NotNull ScanFile file,
+                                          @NotNull ErrorKind kind,
+                                          @NotNull String shortError,
+                                          @NotNull String detailedError) {
+    myReport.addCheckError(file, kind, shortError, detailedError);
   }
 
   public synchronized void postError(@NotNull ScanFile file, @NotNull String error) {

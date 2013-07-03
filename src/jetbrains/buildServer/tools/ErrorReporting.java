@@ -24,7 +24,14 @@ import org.jetbrains.annotations.NotNull;
  *         Date: 08.11.11 14:37
  */
 public interface ErrorReporting {
-  void postCheckError(@NotNull final ScanFile file, @NotNull ErrorKind kind, @NotNull final String error);
+  void postCheckError(@NotNull ScanFile file, @NotNull ErrorKind kind, @NotNull final String error);
+
+  void postCheckError(@NotNull ScanFile file,
+                      @NotNull ErrorKind kind,
+                      @NotNull String shortError,
+                      @NotNull String detailedError);
+
+
   void postError(@NotNull final ScanFile file, @NotNull final String error);
 
   void ruleNotVisited(@NotNull final PathRule rule);

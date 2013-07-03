@@ -27,6 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import static jetbrains.buildServer.tools.java.JavaVersion.Java_1_7;
 import static org.testng.Assert.assertEquals;
@@ -58,18 +59,27 @@ public class RulesMatcherTest extends RulesBaseTestCase {
     Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bb")));
     Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbq")));
 
+    Assert.assertTrue(isPathUnknown(s, mockFile("ppp/bbq")));
+
     //excludes wins
     Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar")));
     Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
   }
 
+  private boolean isPathUnknown(PathSettings s, ScanFile f) {
+    return s.getFileCheckMode(f) == null;
+  }
+
   private boolean isPathExcluded(PathSettings s, ScanFile f) {
-    return s.getFileCheckMode(f).isEmpty();
+    final Collection<? extends CheckHolder> mode = s.getFileCheckMode(f);
+    return mode != null && mode.isEmpty();
   }
 
   @Nullable
   private JavaVersion getVersionRule(PathSettings s, ScanFile f) {
-    for (CheckHolder holder : s.getFileCheckMode(f)) {
+    final Collection<? extends CheckHolder> mode = s.getFileCheckMode(f);
+    if (mode == null) return null;
+    for (CheckHolder holder : mode) {
       if (holder instanceof VersionRule) {
         return ((VersionRule) holder).getVersion();
       }
@@ -79,7 +89,10 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
   @Nullable
   private StaticCheckRule getStaticRule(PathSettings s, ScanFile f) {
-    for (CheckHolder holder : s.getFileCheckMode(f)) {
+    final Collection<? extends CheckHolder> mode = s.getFileCheckMode(f);
+    if (mode == null) return null;
+
+    for (CheckHolder holder : mode) {
       if (holder instanceof StaticCheckRule) {
         return ((StaticCheckRule) holder);
       }

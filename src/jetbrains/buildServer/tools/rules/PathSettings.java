@@ -22,10 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -56,9 +53,19 @@ public class PathSettings {
     return myVersions.isPathExcluded(file) && myStatics.isPathExcluded(file);
   }
 
-  @NotNull
+  /**
+   * @param file file
+   * @return null if path not included, checkers otherwise
+   */
+  @Nullable
   public Collection<? extends CheckHolder> getFileCheckMode(@NotNull ScanFile file) {
-    return notNulls(myVersions.findRule(file), myStatics.findRule(file));
+    final Collection<? extends CheckHolder> result = notNulls(myVersions.findRule(file), myStatics.findRule(file));
+    if (!result.isEmpty()) return result;
+
+    if (myVersions.isPathExcluded(file) || myStatics.isPathExcluded(file)) return Collections.emptyList();
+
+    //only return null is path is not mentioned by any rules
+    return null;
   }
 
   @NotNull

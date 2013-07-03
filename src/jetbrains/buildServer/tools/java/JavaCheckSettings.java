@@ -48,8 +48,8 @@ public class JavaCheckSettings implements CheckSettings {
   public Collection<? extends CheckAction> getFileCheckMode(@NotNull ScanFile file, @NotNull final ErrorReporting error) {
     if (!file.getName().endsWith(".class")) return Collections.emptyList();
 
-    Collection<? extends CheckHolder> modes = myRules.getFileCheckMode(file);
-    if (modes.isEmpty()) {
+    final Collection<? extends CheckHolder> modes = myRules.getFileCheckMode(file);
+    if (modes == null) {
       error.postCheckError(file, ErrorKind.PATTERN, "No rule for file");
       return Collections.emptyList();
     }

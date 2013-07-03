@@ -66,7 +66,7 @@ public class RulesParser {
         return true;
       }
     });
-    parsers.add(new RegexParser(Pattern.compile("-\\s?check\\s+static\\s*=\\s*>(.*)\\s*")) {
+    parsers.add(new RegexParser(Pattern.compile("-\\s*check\\s+static\\s*=\\s*>\\s*(.+)\\s*")) {
       protected boolean parse(@NotNull Matcher line) throws IOException {
         String path = line.group(1).trim();
         myStatics.exclude(new PathRule(resolvePath(scanHome, path)));

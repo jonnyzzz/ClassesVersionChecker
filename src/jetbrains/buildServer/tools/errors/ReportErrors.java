@@ -112,7 +112,7 @@ public class ReportErrors {
   }
 
   public boolean hasErrors() {
-    return !myGenericErrorsMessageToFile.isEmpty() || myCheckErrors.isEmpty();
+    return !myGenericErrorsMessageToFile.isEmpty() || !myCheckErrors.isEmpty();
   }
 
   public int getNumberOfErrors() {

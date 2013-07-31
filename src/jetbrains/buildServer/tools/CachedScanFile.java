@@ -29,6 +29,7 @@ import java.io.InputStream;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public class CachedScanFile implements ScanFile {
+  private static final int BUFF_SIZE = 128 * 1024;
   private final ScanFile myHost;
   private volatile byte[] myCache = null;
 
@@ -46,8 +47,8 @@ public class CachedScanFile implements ScanFile {
       cache = myCache;
       if (cache != null) return new ByteArrayInputStream(cache);
 
-      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      final byte[] buff = new byte[65536];
+      final ByteArrayOutputStream bos = new ByteArrayOutputStream(BUFF_SIZE);
+      final byte[] buff = new byte[BUFF_SIZE];
       final InputStream is = myHost.openStream();
       try {
         int x;

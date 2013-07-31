@@ -46,6 +46,16 @@ public class Program {
     final File config = new File(_args[1]);
     System.out.println("Use configuration from: " + config);
 
+    if (!start.exists()) {
+      System.err.println("Search directory does not exits: " + start);
+      System.exit(1);
+    }
+
+    if (!config.isFile()) {
+      System.err.println("Configuration file not found: " + start);
+      System.exit(1);
+    }
+
     final Arguments args = new Arguments(start, config, new File(System.getProperty("java.io.tmpdir"), "classVersionChecker-report.txt"));
     args.dumpTotalRules(System.out);
 

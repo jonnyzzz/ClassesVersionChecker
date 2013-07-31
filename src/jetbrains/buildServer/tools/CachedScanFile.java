@@ -71,4 +71,9 @@ public class CachedScanFile implements ScanFile {
   public boolean isFile() {
     return myHost.isFile();
   }
+
+  @Override
+  public String toString() {
+    return myHost.toString();
+  }
 }

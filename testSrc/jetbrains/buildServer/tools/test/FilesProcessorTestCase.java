@@ -15,9 +15,22 @@ import java.io.IOException;
 public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
   @Test
   public void should_support_archive_as_scan_root() throws IOException {
-    writeAllVersionClassesToZip4();
+    saveFile("foo.zip",
+            zipStream(
+            zipStream("a/zipInZip.jar",
+            zipStream("q/zip3Zip.jar",
+            zipStream("z/zip4Zip.jar",
+                    classBytes("51.class", 51), //1.7
+                    classBytes("50.class", 50), //1.6
+                    classBytes("49.class", 49), //1.5
+                    classBytes("48.class", 48), //1.4
+                    classBytes("47.class", 47), //1.3
+                    classBytes("46.class", 46), //1.2
+                    file("someOther", "Kino Rulezz".getBytes())
+            ))))
+    );
     myHome = new File(myHome, "foo.zip");
-    runTest("1.7 =>");
+    runTest("1.7 => z");
   }
 
   @Test

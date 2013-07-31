@@ -26,7 +26,7 @@ import java.io.IOException;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 11.11.11 17:23
  */
-public class ClassVersionCheckerTest extends FilesProcessorTest {
+public class ClassVersionCheckerTest extends FilesProcessorTestCase {
   @Override
   protected void runTest(@NotNull String config) throws IOException {
     final PathSettings rules = parseConfig(config);

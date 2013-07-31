@@ -28,12 +28,12 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
                     file("someOther", "Kino Rulezz".getBytes())
             ),
             zipStream("x/zip4Zip.jar",
-                    classBytes("51.class", 52) //1.8
+                    classBytes("51.class", 47) //1.3
                     )
             )
     );
     myHome = new File(myHome, "foo.zip");
-    runTest("1.7 => z");
+    runTest("\n 1.3 => \n 1.7 => z");
   }
 
   @Test

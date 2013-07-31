@@ -22,7 +22,6 @@ import jetbrains.buildServer.tools.rules.StaticCheckRule;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -41,11 +40,8 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
     Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
-    final File base = new File(myHome, "fff");
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath());
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), "fff");
   }
-
 
   @Test
   public void testResolveRules_include_zip() throws IOException {
@@ -55,9 +51,7 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
     Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
 
-    final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), "fff.jar!f/a/d/d/g/r");
   }
 
   @Test
@@ -67,10 +61,7 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertTrue(s.getVersions().getExcludes().isEmpty());
     Assert.assertEquals(s.getVersions().getIncludes().size(), 1);
     Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getVersion(), JavaVersion.Java_1_5);
-
-    final File base = new File(myHome, "p/q/f/fff.jar");
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getIncludes().iterator().next().getPath(), "p/q/f/fff.jar!f/a/d/d/g/r");
   }
 
   @Test
@@ -80,9 +71,7 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertTrue(s.getVersions().getIncludes().isEmpty());
     Assert.assertEquals(s.getVersions().getExcludes().size(), 1);
 
-    final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), "fff.jar!f/a/d/d/g/r");
   }
 
   @Test
@@ -92,9 +81,7 @@ public class RulesParserTest extends RulesBaseTestCase {
     Assert.assertTrue(s.getVersions().getIncludes().isEmpty());
     Assert.assertEquals(s.getVersions().getExcludes().size(), 1);
 
-    final File base = new File(myHome, "fff.jar");
-    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), base.getPath() + "!f/a/d/d/g/r");
-    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getBaseFile(), base);
+    Assert.assertEquals(s.getVersions().getExcludes().iterator().next().getPath(), "fff.jar!f/a/d/d/g/r");
   }
 
   @Test
@@ -108,8 +95,8 @@ public class RulesParserTest extends RulesBaseTestCase {
     final Iterator<? extends StaticCheckRule> it = s1.getStaticChecks().getIncludes().iterator();
 
     Assert.assertEquals(s1.getStaticChecks().getIncludes().size(), 2);
-    Assert.assertEquals(it.next().getPath(), new File(myHome, "agent").getPath());
-    Assert.assertEquals(it.next().getPath(), new File(myHome, "webapps").getPath());
+    Assert.assertEquals(it.next().getPath(), "agent/");
+    Assert.assertEquals(it.next().getPath(), "webapps/");
   }
 
   @Test
@@ -120,6 +107,6 @@ public class RulesParserTest extends RulesBaseTestCase {
     final Iterator<? extends StaticCheckRule> it = s1.getStaticChecks().getIncludes().iterator();
 
     Assert.assertEquals(s1.getStaticChecks().getIncludes().size(), 1);
-    Assert.assertEquals(it.next().getPath(), myHome.getPath());
+    Assert.assertEquals(it.next().getPath(), "");
   }
 }

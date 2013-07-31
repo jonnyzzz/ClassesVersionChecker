@@ -19,7 +19,7 @@ package jetbrains.buildServer.tools.step;
 import jetbrains.buildServer.tools.Continuation;
 import jetbrains.buildServer.tools.ScanFile;
 import jetbrains.buildServer.tools.ScanStep;
-import jetbrains.buildServer.tools.fs.FSScanFile;
+import jetbrains.buildServer.tools.fs.FSScanFileBase;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DirectoryScanStep implements ScanStep {
   public void process(@NotNull ScanFile file, @NotNull final Continuation c) {
-    if (file instanceof FSScanFile) {
-      for (ScanFile scanFile : ((FSScanFile) file).listFiles()) {
+    if (file instanceof FSScanFileBase) {
+      for (ScanFile scanFile : ((FSScanFileBase) file).listFiles()) {
         c.postTask(scanFile);
       }
     }

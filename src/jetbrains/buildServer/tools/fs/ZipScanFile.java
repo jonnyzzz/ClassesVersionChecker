@@ -36,7 +36,9 @@ public class ZipScanFile implements ScanFile {
   private final ZipEntry myEntry;
   private final AtomicBoolean myStreamUsed = new AtomicBoolean(false);
 
-  public ZipScanFile(ScanFile parent, ZipInputStream zip, ZipEntry entry) {
+  public ZipScanFile(@NotNull final ScanFile parent,
+                     @NotNull final ZipInputStream zip,
+                     @NotNull final ZipEntry entry) {
     myParent = parent;
     myZip = zip;
     myEntry = entry;
@@ -77,7 +79,7 @@ public class ZipScanFile implements ScanFile {
 
   @NotNull
   public String getName() {
-    return myParent.getName() + "!" + myEntry.getName();
+    return Naming.resolveZipEntry(myParent, myEntry.getName());
   }
 
   public boolean isFile() {

@@ -32,10 +32,6 @@ public class ClassVersionChecker {
                                   @NotNull final PathSettings rules,
                                   @NotNull final ErrorReporting reporting) {
     rules.dumpTotalRules(System.out);
-    if (!rules.validateRules(System.err)) {
-      //This is only a fast fail test. Full check result will be included in the result file
-      System.err.println("Some file rules were not visited!");
-    }
 
     FilesProcessor.processFiles(scanHome, new JavaCheckSettings(rules), reporting);
     rules.assertVisited(reporting);

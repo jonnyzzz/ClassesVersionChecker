@@ -90,6 +90,6 @@ public class Program {
 
   @NotNull
   private static PathSettings parseRules(@NotNull Arguments args)  {
-    return new RulesParser(args.getScanHome()).parseConfig(args.getConfigFile()).build();
+    return new RulesParser().parseConfig(args.getConfigFile()).build();
   }
 }

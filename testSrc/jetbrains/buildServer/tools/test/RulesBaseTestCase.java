@@ -62,20 +62,11 @@ public class RulesBaseTestCase extends BaseTestCase {
 
   @NotNull
   protected PathSettings parseConfig(@NotNull final String configText) throws IOException {
-    return new RulesParser(myHome).parseConfig(new StringReader(configText)).build();
+    return new RulesParser().parseConfig(new StringReader(configText)).build();
   }
 
   @NotNull
   public ScanFile mockFile(@NotNull final String relPath) {
-    int s = relPath.indexOf('!');
-    final String path;
-    if (s > 0) {
-      path = new File(myHome.getPath(), relPath.substring(0, s)).getPath() + relPath.substring(s);
-    } else {
-      path = new File(myHome.getPath(), relPath).getPath();
-    }
-
-
     return new ScanFile() {
       @NotNull
       public InputStream openStream() throws IOException {
@@ -84,7 +75,7 @@ public class RulesBaseTestCase extends BaseTestCase {
 
       @NotNull
       public String getName() {
-        return path;
+        return relPath;
       }
 
       public boolean isFile() {
@@ -95,7 +86,6 @@ public class RulesBaseTestCase extends BaseTestCase {
 
   @NotNull
   public ScanFile mockFile(@NotNull final String relPath, @NotNull final byte[] content) {
-    final String path = new File(myHome, relPath).getPath();
     return new ScanFile() {
       @NotNull
       public InputStream openStream() throws IOException {
@@ -104,11 +94,11 @@ public class RulesBaseTestCase extends BaseTestCase {
 
       @NotNull
       public String getName() {
-        return path;
+        return relPath;
       }
 
       public boolean isFile() {
-        return false;
+        return true;
       }
     };
   }
@@ -283,10 +273,12 @@ public class RulesBaseTestCase extends BaseTestCase {
     os.close();
   }
 
+  @NotNull
   protected byte[] classBytes(int version) {
     return new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, 0, 0, 0, (byte) version, 0, 0, 0, 0, 0};
   }
 
+  @NotNull
   protected ZipAction classBytes(@NotNull String name, int version) {
     return file(name, classBytes(version));
   }

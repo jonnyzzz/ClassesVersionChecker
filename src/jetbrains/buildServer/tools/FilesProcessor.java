@@ -15,7 +15,7 @@ package jetbrains.buildServer.tools;
  * limitations under the License.
  */
 
-import jetbrains.buildServer.tools.fs.FSScanFile;
+import jetbrains.buildServer.tools.fs.FSScanFileBase;
 import jetbrains.buildServer.tools.step.CheckFileScanStep;
 import jetbrains.buildServer.tools.step.DirectoryScanStep;
 import jetbrains.buildServer.tools.step.ScanZipStep;
@@ -69,6 +69,12 @@ public class FilesProcessor {
       }
     };
 
-    c.postTask(new FSScanFile(scanHome));
+    c.postTask(new FSScanFileBase(scanHome){
+      @NotNull
+      @Override
+      public String getName() {
+        return "";
+      }
+    });
   }
 }

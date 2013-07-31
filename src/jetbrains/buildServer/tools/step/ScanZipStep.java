@@ -34,8 +34,10 @@ import java.util.zip.ZipInputStream;
  */
 public class ScanZipStep implements ScanStep {
   public void process(@NotNull final ScanFile file, @NotNull final Continuation c) throws IOException {
+    if (!file.isFile()) return;
+
     final String name = file.getName();
-    if (!(name.endsWith(".war") || name.endsWith(".zip") || name.endsWith(".jar"))) return;
+    if (!(name.endsWith(".war") || name.endsWith(".zip") || name.endsWith(".jar") || name.isEmpty())) return;
 
     final ZipInputStream zip = openZip(file, name);
     try {
@@ -49,11 +51,7 @@ public class ScanZipStep implements ScanStep {
 
   private ZipInputStream openZip(@NotNull final ScanFile file,
                                  @NotNull final String name) throws IOException {
-    if (name.endsWith(".zip")) {
-      return new ZipInputStream(new BufferedInputStream(file.openStream()));
-    }
-
-    if (name.endsWith(".war")) {
+    if (name.endsWith(".zip") || name.endsWith(".war") || name.isEmpty()) {
       return new ZipInputStream(new BufferedInputStream(file.openStream()));
     }
 

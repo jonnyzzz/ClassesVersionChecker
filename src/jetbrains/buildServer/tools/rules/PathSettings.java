@@ -79,26 +79,6 @@ public class PathSettings {
     return list;
   }
 
-  public boolean validateRules(@NotNull final PrintStream ps) {
-    boolean failed = true;
-
-    for (PathRule exclude : getVersions().getIncludes()) {
-      if (!exclude.getBaseFile().exists()) {
-        ps.println("Version rule " + exclude.getPath() + " does not match existing file");
-        failed = false;
-      }
-    }
-
-    for (PathRule st : getStaticChecks().getIncludes()) {
-      if (!st.getBaseFile().exists()) {
-        ps.println("Static check rule " + st.getPath() + " does not match existing file");
-        failed = false;
-      }
-    }
-    return failed;
-  }
-
-
   public void assertVisited(@NotNull final ErrorReporting reporting) {
     for (VersionRule rule : getVersions().getIncludes()) {
       if (!rule.isVisited()) {

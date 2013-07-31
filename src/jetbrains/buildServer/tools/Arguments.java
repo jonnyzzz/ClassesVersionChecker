@@ -19,6 +19,7 @@ package jetbrains.buildServer.tools;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -37,6 +38,12 @@ public class Arguments {
     myReport = report;
     myScanHome = scanHome.getCanonicalFile();
     myConfigFile = configFile.getCanonicalFile();
+
+
+    if (!myScanHome.exists()) {
+      throw new FileNotFoundException("Failed to find scan home at: " + myScanHome);
+    }
+
   }
 
   @NotNull

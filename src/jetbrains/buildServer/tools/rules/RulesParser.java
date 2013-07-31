@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.tools.rules;
 
+import jetbrains.buildServer.tools.fs.Naming;
 import jetbrains.buildServer.tools.java.JavaVersion;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +38,7 @@ public class RulesParser {
   private final List<Parser> myParsers;
   private final Queue<File> myConfigs = new ArrayDeque<File>();
 
-  public RulesParser(@NotNull final File scanHome) {
+  public RulesParser() {
     final List<Parser> parsers = new ArrayList<Parser>();
 
     parsers.add(new RegexParser(Pattern.compile("include\\s+(.+)\\s*")) {
@@ -62,14 +63,14 @@ public class RulesParser {
     parsers.add(new RegexParser(Pattern.compile("check\\s+static\\s*=>\\s*(.*)\\s*")) {
       protected boolean parse(@NotNull Matcher line) throws IOException {
         String path = line.group(1).trim();
-        myStatics.include(new StaticCheckRule(resolvePath(scanHome, path), myAllowedStaticClasses));
+        myStatics.include(new StaticCheckRule(resolvePath(path), myAllowedStaticClasses));
         return true;
       }
     });
     parsers.add(new RegexParser(Pattern.compile("-\\s*check\\s+static\\s*=\\s*>\\s*(.+)\\s*")) {
       protected boolean parse(@NotNull Matcher line) throws IOException {
         String path = line.group(1).trim();
-        myStatics.exclude(new PathRule(resolvePath(scanHome, path)));
+        myStatics.exclude(new PathRule(resolvePath(path)));
         return true;
       }
     });
@@ -87,7 +88,7 @@ public class RulesParser {
             throw new IOException("Failed to parse java rule: " + line);
           }
 
-          myVersions.include(new VersionRule(resolvePath(scanHome, part), v));
+          myVersions.include(new VersionRule(resolvePath(part), v));
           return true;
         }
       });
@@ -102,7 +103,7 @@ public class RulesParser {
         } else {
           throw new IOException("Failed to parse - rule: " + line);
         }
-        myVersions.exclude(new PathRule(resolvePath(scanHome, path)));
+        myVersions.exclude(new PathRule(resolvePath(path)));
         return true;
       }
     });
@@ -163,16 +164,8 @@ public class RulesParser {
     return this;
   }
 
-  private static String resolvePath(@NotNull final File home, @NotNull String path) throws IOException {
-    path = path.trim().replaceAll("[\\\\/]+", "/");
-    if (path.length() == 0) return home.getPath();
-    int q = path.indexOf('!');
-
-    if (q > 0) {
-      return resolvePath(home, path.substring(0, q)) + (path.substring(q));
-    }
-
-    return new File(home, path).getCanonicalPath();
+  private static String resolvePath(@NotNull String path) throws IOException {
+    return Naming.normalizePath(path);
   }
 
   private interface Parser {

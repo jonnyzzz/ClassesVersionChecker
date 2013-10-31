@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tests" type="TestNG" factoryName="TestNG" nameChangedByUser="true">
+  <configuration default="false" name="Tests" type="TestNG" factoryName="TestNG">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="classVersionChecker" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />

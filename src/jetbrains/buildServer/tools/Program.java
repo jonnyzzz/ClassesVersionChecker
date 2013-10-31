@@ -88,7 +88,7 @@ public class Program {
       System.err.println("There were " + reporting.getNumberOfErrors() + " class check errors detected");
       System.err.flush();
       System.err.flush();
-      System.err.println("##teamcity[buildProblem identity='class_version_checker_" + settings_hash + "' description='" + reporting.getNumberOfErrors() + " class check errors detected']");
+      System.err.println("##teamcity[buildProblem identity='jcvc_" + settings_hash + "' description='" + reporting.getNumberOfErrors() + " class check errors detected']");
       System.err.flush();
       System.exit(1);
       return;

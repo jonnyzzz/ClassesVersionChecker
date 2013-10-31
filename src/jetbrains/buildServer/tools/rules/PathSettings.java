@@ -126,7 +126,7 @@ public class PathSettings {
 
       return hex(mb.digest());
     } catch (Exception e) {
-      return "nano" + System.nanoTime();
+      return "nano" + (System.nanoTime() % 100000);
     }
   }
 }

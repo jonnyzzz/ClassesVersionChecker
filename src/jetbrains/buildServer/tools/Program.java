@@ -85,10 +85,12 @@ public class Program {
     System.out.flush();
 
     if (reporting.hasErrors()) {
-      System.err.println("There were " + reporting.getNumberOfErrors() + " class check errors detected");
+      int errors = reporting.getNumberOfErrors();
+      System.err.println("There were " + errors + " class check errors detected");
       System.err.flush();
       System.err.flush();
-      System.err.println("##teamcity[buildProblem identity='jcvc_" + settings_hash + "' description='" + reporting.getNumberOfErrors() + " class check errors detected']");
+      System.err.println("##teamcity[buildProblem identity='jcvc_" + settings_hash + "' description='" + errors + " class check errors detected']");
+      System.err.println("##teamcity[buildStatisticValue key='ClassChecker.Errors' value='" + errors + "']");
       System.err.flush();
       System.exit(1);
       return;

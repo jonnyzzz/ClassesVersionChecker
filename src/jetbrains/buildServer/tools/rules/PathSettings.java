@@ -21,8 +21,12 @@ import jetbrains.buildServer.tools.ScanFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.security.MessageDigest;
 import java.util.*;
+
+import static jetbrains.buildServer.tools.HEX.hex;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -106,5 +110,23 @@ public class PathSettings {
     }
     ps.println();
     ps.println();
+  }
+
+  @NotNull
+  public String computeHash() {
+    try {
+      final MessageDigest mb = MessageDigest.getInstance("SHA1");
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      PrintStream ps = new PrintStream(bos, true, "utf-8");
+      dumpTotalRules(ps);
+      ps.close();
+      bos.close();
+
+      mb.digest(bos.toByteArray());
+
+      return hex(mb.digest());
+    } catch (Exception e) {
+      return "nano" + System.nanoTime();
+    }
   }
 }

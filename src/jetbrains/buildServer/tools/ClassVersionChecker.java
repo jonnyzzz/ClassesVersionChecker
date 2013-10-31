@@ -31,8 +31,6 @@ public class ClassVersionChecker {
   public static void checkClasses(@NotNull final File scanHome,
                                   @NotNull final PathSettings rules,
                                   @NotNull final ErrorReporting reporting) {
-    rules.dumpTotalRules(System.out);
-
     FilesProcessor.processFiles(scanHome, new JavaCheckSettings(rules), reporting);
     rules.assertVisited(reporting);
 

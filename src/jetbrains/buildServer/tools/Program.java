@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 
+import static jetbrains.buildServer.tools.ClassVersionChecker.checkClasses;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 04.03.11 16:42
@@ -65,7 +67,13 @@ public class Program {
   private static void processFiles(@NotNull final Arguments args) {
     final ErrorsCollection reporting = new ErrorsCollection(args);
 
-    ClassVersionChecker.checkClasses(args.getScanHome(), parseRules(args),reporting);
+    final PathSettings rules = parseRules(args);
+
+    final String settings_hash = rules.computeHash();
+
+    rules.dumpTotalRules(System.out);
+
+    checkClasses(args.getScanHome(), rules, reporting);
     System.out.println();
     System.out.println();
 
@@ -77,10 +85,10 @@ public class Program {
     System.out.flush();
 
     if (reporting.hasErrors()) {
-      System.err.println("There were " + reporting.getNumberOfErrors() + " class version errors detected");
+      System.err.println("There were " + reporting.getNumberOfErrors() + " class check errors detected");
       System.err.flush();
       System.err.flush();
-      System.err.println("##teamcity[buildProblem identity='class_version_checker' description='" + reporting.getNumberOfErrors() + " class check errors detected']");
+      System.err.println("##teamcity[buildProblem identity='class_version_checker_" + settings_hash + "' description='" + reporting.getNumberOfErrors() + " class check errors detected']");
       System.err.flush();
       System.exit(1);
       return;

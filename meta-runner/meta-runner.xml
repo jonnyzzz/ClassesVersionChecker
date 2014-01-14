@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta-runner name="Java Classes Version Checker">
+  <description>Runs Java Classes Version checker tool</description>
+  <settings>
+    <parameters>
+      <param name="meta.config" value="" spec="text display='normal' label='Path to config file' validationMode='not_empty'"/>
+      <param name="meta.root" value="." spec="text display='normal' label='Path to content root' validationMode='not_empty'"/>
+    </parameters>
+    <build-runners>
+      <runner name="Run Java Classes Version Checker" type="Ant">
+        <parameters>
+          <param name="build-file"><![CDATA[<project name="called from meta runner" default="nop" basedir=".">
+  <target name="nop"/>
+
+  <property name="meta.jar" value="none.jar"/>
+  <property name="meta.root" value="a"/>
+  <property name="meta.config" value="b"/>
+  <property name="meta.out" value="c"/>
+
+  <target name="run">
+    <java fork="true" jar="%teamcity.tool.classes-version-checker%/classVersionChecker.jar">
+      <arg path="%meta.root%"/>
+      <arg path="%meta.config%"/>
+    </java>
+  </target>
+</project>]]></param>
+          <param name="teamcity.coverage.emma.include.source" value="true" />
+          <param name="teamcity.coverage.emma.instr.parameters" value="-ix -*Test*" />
+          <param name="teamcity.coverage.idea.includePatterns" value="*" />
+          <param name="teamcity.coverage.jacoco.patterns" value="+:*" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="target" value="run" />
+          <param name="use-custom-build-file" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <requirements />
+  </settings>
+</meta-runner>
+

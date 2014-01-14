@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:noNamespaceSchemaLocation="urn:schemas-jetbrains-com:teamcity-plugin-v1-xml">
+  <info>
+    <name>ClassesVersionCheckerMR</name>
+    <display-name>Classes Version Checker Tool + Meta-Runner</display-name>
+    <version>@Plugin_Version@</version>
+    <description>Classes Version Checker as tool + meta-runner for it's use. See description at https://github.com/jonnyzzz/ClassesVersionChecker</description>
+    <vendor>
+      <name>JetBrains, s.r.o.</name>
+      <url>http://www.jetbrains.com</url>
+    </vendor>
+  </info>
+  <deployment use-separate-classloader="false"/>
+</teamcity-plugin>

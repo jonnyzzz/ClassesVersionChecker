@@ -13,4 +13,21 @@
     <touch file="${home}/BUILD_${build.number}"/>
   </target>
 
+  <target name="update-plugin-version">
+    <property name="home" value="${artifact.output.path}"/>
+
+    <condition property="build.number" value="snapshot" else="${build.number}">
+      <not>
+        <isset property="build.number"/>
+      </not>
+    </condition>
+
+    <echo message="Setting version to: ${build.number}"/>
+
+    <replace dir="${home}" summary="true">
+      <include name="**/teamcity-plugin.xml"/>
+      <replacefilter token="@Plugin_Version@" value="${build.number}"/>
+    </replace>
+  </target>
+
 </project>

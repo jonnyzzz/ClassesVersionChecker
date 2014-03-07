@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact name="plugin">
+    <output-path>$PROJECT_DIR$/out/artifacts/plugin</output-path>
+    <properties id="ant-postprocessing">
+      <options enabled="true">
+        <file>file://$PROJECT_DIR$/build/ant.build.xml</file>
+        <target>update-plugin-version</target>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="file-copy" path="$PROJECT_DIR$/meta-runner/teamcity-plugin.server.xml" output-file-name="teamcity-plugin.xml" />
+      <element id="directory" name="server">
+        <element id="directory" name="metaRunners">
+          <element id="file-copy" path="$PROJECT_DIR$/meta-runner/meta-runner.xml" output-file-name="ClassesVersionCheckerMR.xml" />
+        </element>
+      </element>
+      <element id="directory" name="agent">
+        <element id="archive" name="classes-version-checker.zip">
+          <element id="artifact" artifact-name="jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/meta-runner/teamcity-plugin.agent.xml" output-file-name="teamcity-plugin.xml" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

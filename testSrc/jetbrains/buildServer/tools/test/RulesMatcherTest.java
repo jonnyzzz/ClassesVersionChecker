@@ -61,9 +61,9 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
     Assert.assertTrue(isPathUnknown(s, mockFile("ppp/bbq")));
 
-    //excludes wins
-    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar")));
-    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
+    //excludes wins no more
+    Assert.assertFalse(isPathExcluded(s, mockFile("aaa/bbb.jar")));
+    Assert.assertFalse(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
   }
 
   private boolean isPathUnknown(PathSettings s, ScanFile f) {
@@ -137,6 +137,21 @@ public class RulesMatcherTest extends RulesBaseTestCase {
     assertNotNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!e/d/sd")));
 
     assertNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!zzz")));
+  }
+
+  @Test
+  public void testStaticRules2() throws IOException {
+    final PathSettings s = parseConfig("check static => aaa/bbb.jar\n - check static => aaa");
+
+    assertNull(getStaticRule(s, mockFile("aaa")));
+    assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
+  }
+  @Test
+  public void testStaticRules3() throws IOException {
+    final PathSettings s = parseConfig("- check static => aaa\ncheck static => aaa/bbb.jar");
+
+    assertNull(getStaticRule(s, mockFile("aaa")));
+    assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
   }
 
 }

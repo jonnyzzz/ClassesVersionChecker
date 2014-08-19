@@ -53,7 +53,9 @@ public class PathRules<T extends PathRule> {
   }
 
   public boolean isPathExcluded(@NotNull ScanFile file) {
-    return myExcludes.findRule(file) != null;
+    final PathRule exclude = myExcludes.findRule(file);
+    final T include = myIncludes.findRule(file);
+    return exclude != null && (include == null || !include.getPath().contains(exclude.getPath()));
   }
 
   public static class Builder<T extends PathRule> {

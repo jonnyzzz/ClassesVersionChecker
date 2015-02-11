@@ -13,6 +13,8 @@
 ;     exclude following paths from the check
 ;  allow static class NAME
 ;     allow use of given class (by starts-with) from static context
+;  include path
+;     include content of path (it is relative to the parent directory of current config file) into this file
 ;
 ;  see example below
 ;

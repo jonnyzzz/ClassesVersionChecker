@@ -81,6 +81,7 @@ public class Program {
     reporting.dumpShortReport(System.out);
 
     ///publish report as artifact
+    System.out.println();
     System.out.println(" ##teamcity[publishArtifacts '" + reportFile.getPath() + "=>classVersionChecker-report.zip'] ");
     System.out.flush();
 

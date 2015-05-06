@@ -61,9 +61,9 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
     Assert.assertTrue(isPathUnknown(s, mockFile("ppp/bbq")));
 
-    //excludes wins
-    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar")));
-    Assert.assertTrue(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
+    //excludes wins no more
+    Assert.assertFalse(isPathExcluded(s, mockFile("aaa/bbb.jar")));
+    Assert.assertFalse(isPathExcluded(s, mockFile("aaa/bbb.jar!sss")));
   }
 
   private boolean isPathUnknown(PathSettings s, ScanFile f) {
@@ -137,6 +137,51 @@ public class RulesMatcherTest extends RulesBaseTestCase {
     assertNotNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!e/d/sd")));
 
     assertNull(getStaticRule(s, mockFile("aaa/bbb/ccc/ddd.jar!zzz")));
+  }
+
+  @Test
+  public void testStaticExcludeRulesSimple() throws IOException {
+    final PathSettings s = parseConfig("check static => aaa/bbb.jar\n - check static => aaa");
+
+    assertNull(getStaticRule(s, mockFile("aaa")));
+    assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
+  }
+
+  @Test
+  public void testStaticExcludeRulesSimple2() throws IOException {
+    final PathSettings s = parseConfig("- check static => aaa\ncheck static => aaa/bbb.jar");
+
+    assertNull(getStaticRule(s, mockFile("aaa")));
+    assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
+  }
+
+  @Test
+  public void testStaticExcludeRulesWithHierarchyIgnoreOrder() throws IOException {
+    final String[] source = new String[]{"check static => ", "- check static => aaa", "check static => aaa/bbb.jar"};
+    int[][] variants = new int[][]{{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+    for (int[] variant : variants) {
+      assertEquals(variant.length, source.length);
+      final String config = source[variant[0]] + '\n' + source[variant[1]] + '\n' + source[variant[2]];
+      final PathSettings s = parseConfig(config);
+      assertNotNull(getStaticRule(s, mockFile("")));
+      assertNull(getStaticRule(s, mockFile("aaa")));
+      assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
+    }
+  }
+
+  @Test
+  public void testStaticExcludeRulesWithHierarchyIgnoreOrder2() throws IOException {
+    final String[] source = new String[]{"check static => aaa", "- check static => aaa/bbb.jar", "check static => aaa/bbb.jar!/a.class"};
+    int[][] variants = new int[][]{{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+    for (int[] variant : variants) {
+      assertEquals(variant.length, source.length);
+      final String config = source[variant[0]] + '\n' + source[variant[1]] + '\n' + source[variant[2]];
+      final PathSettings s = parseConfig(config);
+      assertNull(getStaticRule(s, mockFile("")));
+      assertNotNull(getStaticRule(s, mockFile("aaa")));
+      assertNull(getStaticRule(s, mockFile("aaa/bbb.jar")));
+      assertNotNull(getStaticRule(s, mockFile("aaa/bbb.jar!/a.class")));
+    }
   }
 
 }

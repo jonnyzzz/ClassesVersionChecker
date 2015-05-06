@@ -17,6 +17,7 @@
 package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.*;
+import jetbrains.buildServer.tools.rules.PathRule;
 import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
 import jetbrains.buildServer.tools.rules.VersionRule;
@@ -25,6 +26,7 @@ import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -283,4 +285,11 @@ public class RulesBaseTestCase extends BaseTestCase {
     return file(name, classBytes(version));
   }
 
+  protected void assertRule(@Nullable final PathRule actual, @Nullable final String expectedPath) {
+    if (actual == null) {
+      Assert.assertNull(expectedPath);
+    } else {
+      Assert.assertEquals(actual.getPath(), expectedPath);
+    }
+  }
 }

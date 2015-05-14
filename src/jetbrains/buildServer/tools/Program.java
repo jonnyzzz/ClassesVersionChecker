@@ -21,7 +21,8 @@ import jetbrains.buildServer.tools.rules.PathSettings;
 import jetbrains.buildServer.tools.rules.RulesParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import static jetbrains.buildServer.tools.ClassVersionChecker.checkClasses;
@@ -32,14 +33,9 @@ import static jetbrains.buildServer.tools.ClassVersionChecker.checkClasses;
  */
 public class Program {
   public static void main(String[] _args) throws ExecutionException, InterruptedException, IOException {
-    System.out.println();
-    System.out.println("Usage: java -jar classVersionChecker.jar <scan path> configFile.txt");
-    System.out.println();
-
     if (_args.length != 2) {
       System.err.println("Invalid arguments. ");
-      System.exit(1);
-      return;
+      printUsageAndExit(1);
     }
 
     final File start = new File(_args[0]);
@@ -50,18 +46,26 @@ public class Program {
 
     if (!start.exists()) {
       System.err.println("Search directory does not exits: " + start);
-      System.exit(1);
+      printUsageAndExit(1);
     }
 
     if (!config.isFile()) {
-      System.err.println("Configuration file not found: " + start);
-      System.exit(1);
+      System.err.println("Configuration file not found: " + config);
+      printUsageAndExit(1);
     }
 
-    final Arguments args = new Arguments(start, config, new File(System.getProperty("java.io.tmpdir"), "classVersionChecker-report.txt"));
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final Arguments args = new Arguments(start, config, File.createTempFile("ClassVersionChecker", "txt", tempDir));
     args.dumpTotalRules(System.out);
 
     processFiles(args);
+  }
+
+  private static void printUsageAndExit(int code) {
+    System.out.println();
+    System.out.println("Usage: java -jar classVersionChecker.jar <scan path> configFile.txt");
+    System.out.println();
+    System.exit(code);
   }
 
   private static void processFiles(@NotNull final Arguments args) {

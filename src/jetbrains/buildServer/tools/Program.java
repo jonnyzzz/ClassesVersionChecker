@@ -55,7 +55,7 @@ public class Program {
     }
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    final Arguments args = new Arguments(start, config, File.createTempFile("ClassVersionChecker", "txt", tempDir));
+    final Arguments args = new Arguments(start, config, new File(tempDir, "classVersionChecker-report.txt"));
     args.dumpTotalRules(System.out);
 
     processFiles(args);

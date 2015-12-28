@@ -18,6 +18,8 @@ package jetbrains.buildServer.tools.rules;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.StringTokenizer;
+
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 08.11.11 15:41
@@ -41,6 +43,28 @@ public class PathRule {
 
   public void setVisited() {
     myIsVisited = true;
+  }
+
+  public boolean accept(String fileName) {
+    StringTokenizer fileNameTokens = new StringTokenizer(fileName, "/!", true);
+    StringTokenizer myPathTokens = new StringTokenizer(myPath, "/!", true);
+    while (myPathTokens.hasMoreTokens()) {
+      if (!fileNameTokens.hasMoreTokens()) return false;
+
+      String myPathToken = myPathTokens.nextToken();
+      String fileNameToken = fileNameTokens.nextToken();
+
+      if (myPathToken.equals("*")) {
+        continue;
+      }
+
+      if (!myPathTokens.hasMoreTokens()) {
+        //last token in myPath - can be substring of remaining fileName
+        return fileNameToken.startsWith(myPathToken);
+      }
+      if (!fileNameToken.equals(myPathToken)) return false;
+    }
+    return true;
   }
 
   @Override

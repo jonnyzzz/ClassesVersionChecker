@@ -46,7 +46,7 @@ public class SimplePathRules<T extends PathRule> {
   public T findRule(@NotNull final ScanFile file) {
     final String name = file.getName();
     for (T rule : myRules) {
-      if (name.startsWith(rule.getPath())) {
+      if (rule.accept(name)) {
         rule.setVisited();
         return rule;
       }

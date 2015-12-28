@@ -52,6 +52,17 @@ public class RulesMatcherTest extends RulesBaseTestCase {
   }
 
   @Test
+  public void testMatchesWildcard() throws IOException {
+    final PathSettings s = parseConfig("1.7 => aaa/*/bbb\r\n-=>aaa/*/bbb/z");
+
+    assertEquals(getVersionRule(s, mockFile("aaa/x1/bbb/ccc.jar")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/x2/bbb/ccc.jar!aaa/ppp.jar!mmm")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/x3/bbb.jar!aaa/bbb.jar!zzz")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/x2.zip/bbb/ccc.jar!aaa/ppp.jar!mmm")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/x1/bbb/z")), null);
+  }
+
+  @Test
   public void testExcludes() throws IOException {
     final PathSettings s = parseConfig("1.7 => aaa/bbb.jar\r\n-=>aaa/b");
 

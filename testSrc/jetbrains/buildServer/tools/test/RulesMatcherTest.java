@@ -53,12 +53,12 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
   @Test
   public void testMatchesWildcard() throws IOException {
-    final PathSettings s = parseConfig("1.7 => aaa/*/bbb\r\n-=>aaa/*/bbb/z");
+    final PathSettings s = parseConfig("1.7 => aaa/*/bbb\r\n1.7 => aaa/*!bbb\r\n-=>aaa/*/bbb/z");
 
     assertEquals(getVersionRule(s, mockFile("aaa/x1/bbb/ccc.jar")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/x2/bbb/ccc.jar!aaa/ppp.jar!mmm")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/x3/bbb.jar!aaa/bbb.jar!zzz")), Java_1_7);
-    assertEquals(getVersionRule(s, mockFile("aaa/x2.zip/bbb/ccc.jar!aaa/ppp.jar!mmm")), Java_1_7);
+    assertEquals(getVersionRule(s, mockFile("aaa/x2.zip!bbb/ccc.jar!aaa/ppp.jar!mmm")), Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/x1/bbb/z")), null);
   }
 
@@ -131,7 +131,7 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
   @Test
   public void testWildcardRuleLose() throws IOException {
-    final PathSettings s = parseConfig("1.7 => aaa/*/bbbbb\r\n1.6 => aaa/ccc/");
+    final PathSettings s = parseConfig("1.8 => \r\n1.7 => aaa/*/bbbbb\r\n1.6 => aaa/ccc/");
 
     assertEquals(getVersionRule(s, mockFile("aaa/yyy/bbbbb/k.jar")), JavaVersion.Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/ccc/bbbbb/k.jar")), JavaVersion.Java_1_6);

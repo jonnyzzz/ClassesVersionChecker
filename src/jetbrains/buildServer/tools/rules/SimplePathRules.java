@@ -30,7 +30,7 @@ public class SimplePathRules<T extends PathRule> {
   private final Set<T> myRules;
 
   public SimplePathRules(@NotNull final Collection<? extends T> rules) {
-    final TreeSet<T> ts = new TreeSet<T>(MATCH_ORDER);
+    final TreeSet<T> ts = new TreeSet<T>(PathRule.MATCH_ORDER);
     ts.addAll(rules);
     myRules = Collections.unmodifiableSet(ts);
   }
@@ -53,26 +53,6 @@ public class SimplePathRules<T extends PathRule> {
     }
     return null;
   }
-
-  private final static Comparator<PathRule> MATCH_ORDER = new Comparator<PathRule>() {
-    public int compare(PathRule o1, PathRule o2) {
-      boolean o1ContainsWildcard = o1.getPath().contains("*");
-      boolean o2ContainsWildcard = o2.getPath().contains("*");
-      if (o1ContainsWildcard && !o2ContainsWildcard) return 1;
-      if (o2ContainsWildcard && !o1ContainsWildcard) return -1;
-
-      final String p1 = o1.getPath();
-      final String p2 = o2.getPath();
-
-      final int s1 = p1.length();
-      final int s2 = p2.length();
-
-      if (s1 < s2) return 1;
-      if (s1 > s2) return -1;
-      return p1.compareTo(p2);
-    }
-  };
-
   private final static Comparator<PathRule> DUMP_ORDER = new Comparator<PathRule>() {
     public int compare(PathRule o1, PathRule o2) {
       final String p1 = o1.getPath();

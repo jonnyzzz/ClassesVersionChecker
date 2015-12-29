@@ -56,6 +56,11 @@ public class SimplePathRules<T extends PathRule> {
 
   private final static Comparator<PathRule> MATCH_ORDER = new Comparator<PathRule>() {
     public int compare(PathRule o1, PathRule o2) {
+      boolean o1ContainsWildcard = o1.getPath().contains("*");
+      boolean o2ContainsWildcard = o2.getPath().contains("*");
+      if (o1ContainsWildcard && !o2ContainsWildcard) return 1;
+      if (o2ContainsWildcard && !o1ContainsWildcard) return -1;
+
       final String p1 = o1.getPath();
       final String p2 = o2.getPath();
 

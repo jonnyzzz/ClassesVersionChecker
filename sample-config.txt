@@ -24,6 +24,8 @@
 ;  exclude rules are checked first
 ;  longest rule wins
 ;
+;  '*' can be used to denote any directory
+
 ;  have fun
 ;
 

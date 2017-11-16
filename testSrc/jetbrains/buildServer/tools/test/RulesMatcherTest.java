@@ -131,7 +131,7 @@ public class RulesMatcherTest extends RulesBaseTestCase {
 
   @Test
   public void testWildcardRuleLose() throws IOException {
-    final PathSettings s = parseConfig("1.8 => \r\n1.7 => aaa/*/bbbbb\r\n1.6 => aaa/ccc/");
+    final PathSettings s = parseConfig("9 => \r\n1.7 => aaa/*/bbbbb\r\n1.6 => aaa/ccc/");
 
     assertEquals(getVersionRule(s, mockFile("aaa/yyy/bbbbb/k.jar")), JavaVersion.Java_1_7);
     assertEquals(getVersionRule(s, mockFile("aaa/ccc/bbbbb/k.jar")), JavaVersion.Java_1_6);

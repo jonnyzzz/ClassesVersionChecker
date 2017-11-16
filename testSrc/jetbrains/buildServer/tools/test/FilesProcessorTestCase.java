@@ -154,13 +154,30 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
   }
 
   @Test
+  public void test_all_9() throws IOException {
+    writeAllVersionClasses();
+    runTest("9 =>");
+  }
+
+  @Test
+  public void test_all_1_8() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    writeAllVersionClasses();
+    runTest("1.8 =>");
+  }
+
+  @Test
   public void test_all_1_7() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     writeAllVersionClasses();
     runTest("1.7 =>");
   }
 
   @Test
   public void test_all_1_6() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     expectCheckError("51.class", ErrorKind.VERSION);
     writeAllVersionClasses();
     runTest("1.6 =>");
@@ -168,6 +185,8 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_5() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     expectCheckError("51.class", ErrorKind.VERSION);
     expectCheckError("50.class", ErrorKind.VERSION);
     writeAllVersionClasses();
@@ -176,6 +195,8 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_4() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     expectCheckError("51.class", ErrorKind.VERSION);
     expectCheckError("50.class", ErrorKind.VERSION);
     expectCheckError("49.class", ErrorKind.VERSION);
@@ -186,6 +207,8 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_3() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     expectCheckError("51.class", ErrorKind.VERSION);
     expectCheckError("50.class", ErrorKind.VERSION);
     expectCheckError("49.class", ErrorKind.VERSION);
@@ -197,6 +220,8 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
 
   @Test
   public void test_all_1_2() throws IOException {
+    expectCheckError("53.class", ErrorKind.VERSION);
+    expectCheckError("52.class", ErrorKind.VERSION);
     expectCheckError("51.class", ErrorKind.VERSION);
     expectCheckError("50.class", ErrorKind.VERSION);
     expectCheckError("49.class", ErrorKind.VERSION);
@@ -261,6 +286,8 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
   }
 
   private void writeAllVersionClasses() throws IOException {
+    saveFile("53.class", classBytes(53)); //1.9
+    saveFile("52.class", classBytes(52)); //1.8
     saveFile("51.class", classBytes(51)); //1.7
     saveFile("50.class", classBytes(50)); //1.6
     saveFile("49.class", classBytes(49)); //1.5

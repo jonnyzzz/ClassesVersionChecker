@@ -86,6 +86,10 @@ public class ZipScanFile implements ScanFile {
     return !myEntry.isDirectory();
   }
 
+  public boolean isPhysical() {
+    return false;
+  }
+
   @Override
   public String toString() {
     return "ZipScanFile{name=" + getName() + "}";

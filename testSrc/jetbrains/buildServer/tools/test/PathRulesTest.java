@@ -89,6 +89,10 @@ public class PathRulesTest {
       public boolean isFile() {
         return false;
       }
+
+      public boolean isPhysical() {
+        return false;
+      }
     };
   }
 

@@ -58,7 +58,7 @@ public class FilesProcessor implements Continuation {
       });
     }
   };
-  private final Queue<Future> myFutures = new ConcurrentLinkedQueue<Future>();
+  private final ConcurrentLinkedQueue<Future> myFutures = new ConcurrentLinkedQueue<Future>();
 
   private final AtomicInteger myProcessed = new AtomicInteger();
   @NotNull
@@ -100,9 +100,9 @@ public class FilesProcessor implements Continuation {
         if (f.isDone()) it.remove();
         else lastNonDone = f;
       }
-      if (lastNonDone == null) break;
-      lastNonDone.get();
-
+      if (lastNonDone != null) {
+        lastNonDone.get();
+      }
     }
     myExecutor.shutdown();
     myExecutor.awaitTermination(10, TimeUnit.SECONDS);

@@ -22,8 +22,6 @@ import jetbrains.buildServer.tools.step.ScanZipStep;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,28 +35,34 @@ public class FilesProcessor implements Continuation {
   public static void processFiles(@NotNull final File scanHome,
                                   @NotNull final CheckSettings settings,
                                   @NotNull final ErrorReporting reporting) {
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>()) {
+      {
+        setThreadFactory(r -> {
+          final Thread thread = new Thread(r);
+          thread.setName("Files Processor " + ourThreadNameCounter.getAndIncrement());
+          return thread;
+        });
+      }
+    };
+    final FilesProcessor processor = new FilesProcessor(settings, reporting, executor);
     try {
-      new FilesProcessor(settings, reporting).processRoot(scanHome);
-    } catch (Exception e) {
+      processor.processRoot(scanHome);
+    } catch (Throwable e) {
       if (e instanceof RuntimeException) throw ((RuntimeException) e);
       throw new RuntimeException(e);
+    } finally {
+      executor.shutdown();
+      try {
+        executor.awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException ignored) {
+      }
+      executor.shutdownNow();
     }
   }
 
 
-  private final ThreadPoolExecutor myExecutor = new ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.MINUTES, new LinkedBlockingDeque<Runnable>()) {
-    {
-      setThreadFactory(new ThreadFactory() {
-        @Override
-        public Thread newThread(@NotNull Runnable r) {
-          final Thread thread = new Thread(r);
-          thread.setName("Files Processor " + ourThreadNameCounter.getAndIncrement());
-          return thread;
-        }
-      });
-    }
-  };
-  private final ConcurrentLinkedQueue<Future> myFutures = new ConcurrentLinkedQueue<Future>();
+  private final ThreadPoolExecutor myExecutor;
+  private final ConcurrentLinkedDeque<Future> myFutures = new ConcurrentLinkedDeque<>();
 
   private final AtomicInteger myProcessed = new AtomicInteger();
   @NotNull
@@ -68,9 +72,11 @@ public class FilesProcessor implements Continuation {
   private final ScanStep[] mySteps;
 
   private FilesProcessor(@NotNull final CheckSettings settings,
-                         @NotNull final ErrorReporting reporting) {
+                         @NotNull final ErrorReporting reporting,
+                         @NotNull final ThreadPoolExecutor executor) {
     mySettings = settings;
     myReporting = reporting;
+    myExecutor = executor;
     mySteps = new ScanStep[]{
             new CheckFileScanStep(mySettings, myReporting),
             new ScanZipStep(),
@@ -78,7 +84,7 @@ public class FilesProcessor implements Continuation {
     };
   }
 
-  private void processRoot(@NotNull final File scanHome) throws ExecutionException, InterruptedException {
+  private void processRoot(@NotNull final File scanHome) throws InterruptedException {
     final FSScanFileBase base = new FSScanFileBase(scanHome) {
       @NotNull
       @Override
@@ -88,36 +94,27 @@ public class FilesProcessor implements Continuation {
     };
     this.postTask(base);
 
-    if (!myFutures.isEmpty()) {
-      myExecutor.prestartAllCoreThreads();
-    }
     // Wait till all files processed
     while (!myFutures.isEmpty()) {
-      final Iterator<Future> it = myFutures.iterator();
-      Future lastNonDone = null;
-      while (it.hasNext()) {
-        final Future f = it.next();
-        if (f.isDone()) it.remove();
-        else lastNonDone = f;
-      }
+      myFutures.removeIf(Future::isDone);
+      Future lastNonDone = myFutures.peekLast();
       if (lastNonDone != null) {
-        lastNonDone.get();
+        try {
+          lastNonDone.get();
+        } catch (InterruptedException e) {
+          throw e;
+        } catch (Throwable e) {
+          // Since we use #get as waiting, let's wait other way
+          Thread.sleep(100);
+        }
       }
     }
-    myExecutor.shutdown();
-    myExecutor.awaitTermination(10, TimeUnit.SECONDS);
-    myExecutor.shutdownNow();
   }
 
   @Override
   public void postTask(@NotNull final ScanFile file) {
     if (file.isPhysical()) {
-      myFutures.add(myExecutor.submit(new Runnable() {
-        @Override
-        public void run() {
-          process(file);
-        }
-      }));
+      myFutures.add(myExecutor.submit(() -> process(file)));
     } else {
       process(file);
     }

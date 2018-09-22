@@ -73,6 +73,11 @@ public class CachedScanFile implements ScanFile {
   }
 
   @Override
+  public boolean isPhysical() {
+    return myHost.isPhysical();
+  }
+
+  @Override
   public String toString() {
     return myHost.toString();
   }

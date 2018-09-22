@@ -83,6 +83,10 @@ public class RulesBaseTestCase extends BaseTestCase {
       public boolean isFile() {
         return false;
       }
+
+      public boolean isPhysical() {
+        return false;
+      }
     };
   }
 
@@ -101,6 +105,10 @@ public class RulesBaseTestCase extends BaseTestCase {
 
       public boolean isFile() {
         return true;
+      }
+
+      public boolean isPhysical() {
+        return false;
       }
     };
   }

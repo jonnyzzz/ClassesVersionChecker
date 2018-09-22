@@ -33,4 +33,6 @@ public interface ScanFile {
   String getName();
 
   boolean isFile();
+
+  boolean isPhysical();
 }

@@ -36,6 +36,11 @@ public abstract class FSScanFileBase implements ScanFile {
     return myFile.isFile();
   }
 
+  @Override
+  public boolean isPhysical() {
+    return true;
+  }
+
   @NotNull
   public Collection<ScanFile> listFiles() {
     final File[] files = myFile.listFiles();

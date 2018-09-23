@@ -12,7 +12,7 @@
       <element id="module-output" name="classVersionChecker" />
       <element id="file-copy" path="$PROJECT_DIR$/README" />
       <element id="file-copy" path="$PROJECT_DIR$/sample-config.txt" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/asm/asm-all-4.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/asm/asm-6.2.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

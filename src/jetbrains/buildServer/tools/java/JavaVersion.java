@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Nullable;
 public enum JavaVersion {
   ///see http://en.wikipedia.org/wiki/Java_class_file
 
+  Java_14(58, "Java 14", "14"),
+  Java_13(57, "Java 13", "13"),
+  Java_12(56, "Java 12", "12"),
   Java_11(55, "Java 11", "11"),
   Java_10(54, "Java 10", "10"),
   Java_9(53, "Java 9", "9"),

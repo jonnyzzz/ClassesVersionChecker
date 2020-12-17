@@ -26,12 +26,15 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 08.11.11 14:37
  */
 public class ClassFileChecker implements CheckAction {
+  private final static Pattern MODULE_INFO_CLASS = Pattern.compile("META-INF/versions/[0-9]+/module-info.class");
+
   private final JavaVersion myVersion;
 
   public ClassFileChecker(@NotNull final JavaVersion version) {
@@ -40,7 +43,7 @@ public class ClassFileChecker implements CheckAction {
 
   public void process(@NotNull ScanFile file, @NotNull ErrorReporting reporting) throws IOException {
     // there is no reason to scan module-info.class because it will be loaded only by corresponding JVM version
-    if (file.getName().startsWith("META-INF/") && file.getName().endsWith("module-info.class")) {
+    if (MODULE_INFO_CLASS.matcher(file.getName()).find()) {
       return;
     }
     checkVersion(file, reporting);

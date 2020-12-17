@@ -39,6 +39,10 @@ public class ClassFileChecker implements CheckAction {
   }
 
   public void process(@NotNull ScanFile file, @NotNull ErrorReporting reporting) throws IOException {
+    // there is no reason to scan module-info.class because it will be loaded only by corresponding JVM version
+    if (file.getName().startsWith("META-INF/") && file.getName().endsWith("module-info.class")) {
+      return;
+    }
     checkVersion(file, reporting);
   }
 

@@ -1,28 +1,18 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tests" type="TestNG" factoryName="TestNG">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+  <configuration default="false" name="Tests" type="TestNG">
     <module name="classVersionChecker" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" value="" />
+    <useClassPathOnly />
     <option name="SUITE_NAME" value="" />
     <option name="PACKAGE_NAME" value="jetbrains.buildServer.tools" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="GROUP_NAME" value="" />
     <option name="TEST_OBJECT" value="PACKAGE" />
-    <option name="VM_PARAMETERS" value="-ea" />
+    <option name="VM_PARAMETERS" value="-ea -Dtestng.dtd.http=true" />
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="OUTPUT_DIRECTORY" value="" />
-    <option name="ANNOTATION_TYPE" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="singleModule" />
-    </option>
-    <option name="USE_DEFAULT_REPORTERS" value="false" />
     <option name="PROPERTIES_FILE" value="" />
-    <envs />
     <properties />
     <listeners />
     <RunnerSettings RunnerId="Cover" />
@@ -32,7 +22,8 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Cover" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method>
+    <method v="2">
+      <option name="Make" enabled="true" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="jar" />
       </option>

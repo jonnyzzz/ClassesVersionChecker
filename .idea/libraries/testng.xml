@@ -2,6 +2,7 @@
   <library name="testng">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/testng/testng-7.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/testng/jcommander-1.78.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/lib/testng/testng-7.3.0-javadoc.jar!/" />

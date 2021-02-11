@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  *         Date: 08.11.11 14:37
  */
 public class ClassFileChecker implements CheckAction {
-  private final static String MODULE_INFO_CLASS = "module-info.class";
+  private final static Pattern MODULE_INFO_CLASS = Pattern.compile("/module-info.class");
 
   private final JavaVersion myVersion;
 
@@ -43,7 +43,7 @@ public class ClassFileChecker implements CheckAction {
 
   public void process(@NotNull ScanFile file, @NotNull ErrorReporting reporting) throws IOException {
     // there is no reason to scan module-info.class because it will be loaded only by corresponding JVM version
-    if (MODULE_INFO_CLASS.equals(file.getName())) {
+    if (MODULE_INFO_CLASS.matcher(file.getName()).find()) {
       return;
     }
     checkVersion(file, reporting);

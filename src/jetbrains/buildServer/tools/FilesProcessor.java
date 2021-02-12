@@ -48,8 +48,7 @@ public class FilesProcessor implements Continuation {
     try {
       processor.processRoot(scanHome);
     } catch (Throwable e) {
-      if (e instanceof RuntimeException) throw ((RuntimeException) e);
-      throw new RuntimeException(e);
+      rethrowAsRuntimeException(e);
     } finally {
       executor.shutdown();
       try {
@@ -58,6 +57,11 @@ public class FilesProcessor implements Continuation {
       }
       executor.shutdownNow();
     }
+  }
+
+  static void rethrowAsRuntimeException(@NotNull Throwable e) {
+    if (e instanceof RuntimeException) throw ((RuntimeException) e);
+    throw new RuntimeException(e);
   }
 
 
@@ -94,6 +98,8 @@ public class FilesProcessor implements Continuation {
     };
     this.postTask(base);
 
+    Throwable error = null;
+
     // Wait till all files processed
     while (!myFutures.isEmpty()) {
       myFutures.removeIf(Future::isDone);
@@ -104,11 +110,12 @@ public class FilesProcessor implements Continuation {
         } catch (InterruptedException e) {
           throw e;
         } catch (Throwable e) {
-          // Since we use #get as waiting, let's wait other way
-          Thread.sleep(100);
+          error = e;
         }
       }
     }
+
+    if (error != null) FilesProcessor.rethrowAsRuntimeException(error);
   }
 
   @Override

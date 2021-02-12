@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  *         Date: 08.11.11 14:37
  */
 public class ClassFileChecker implements CheckAction {
-  private final static Pattern MODULE_INFO_CLASS = Pattern.compile("/module-info.class");
+  private final static Pattern MODULE_INFO_CLASS = Pattern.compile("[!/]module-info.class");
 
   private final JavaVersion myVersion;
 

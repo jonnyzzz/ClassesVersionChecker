@@ -1,6 +1,7 @@
 package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.ErrorKind;
+import jetbrains.buildServer.tools.ScanFile;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
@@ -122,6 +123,22 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
     runTest("1.3 =>");
   }
 
+  @Test
+  public void test_ignore_module_info_classes() throws IOException {
+    expectNoErrors();
+
+    writeZipWithModuleInfoClasses();
+    runTest("1.8 =>");
+  }
+
+  private void expectNoErrors() {
+    m.checking(new Expectations(){{
+      never(rep).postCheckError(with(any(ScanFile.class)), with(any(ErrorKind.class)), with(any(String.class)));
+      never(rep).postCheckError(with(any(ScanFile.class)), with(any(ErrorKind.class)), with(any(String.class)), with(any(String.class)));
+      never(rep).postError(with(any(ScanFile.class)), with(any(String.class)));
+    }});
+  }
+
   private void writeAllVersionClassesToZip() throws IOException {
     saveFile("foo.zip",
             zipStream(
@@ -132,6 +149,19 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
                     classBytes("47.class", 47), //1.3
                     classBytes("46.class", 46), //1.2
                     file("someOther", "Kino Rulezz".getBytes())
+            )
+    );
+  }
+
+  private void writeZipWithModuleInfoClasses() throws IOException {
+    saveFile("foo.zip",
+            zipStream(
+                    zipStream("a/zipInZip.jar",
+                            classBytes("module-info.class", 55), // java 11
+                            classBytes("52.class", 52), //1.8
+                            file("someOther", "Kino Rulezz".getBytes())
+                    ),
+                    classBytes("a/b/c/d/module-info.class", 56) // java 12
             )
     );
   }

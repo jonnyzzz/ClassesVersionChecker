@@ -274,13 +274,15 @@ public class RulesBaseTestCase extends BaseTestCase {
     }
   }
 
-  protected void saveFile(@NotNull final String name, @NotNull final byte[] ps) throws IOException {
+  @NotNull
+  protected File saveFile(@NotNull final String name, @NotNull final byte[] ps) throws IOException {
     final File file = new File(myHome, name);
     //noinspection ResultOfMethodCallIgnored
     file.getParentFile().mkdirs();
     OutputStream os = new FileOutputStream(file);
     os.write(ps);
     os.close();
+    return file;
   }
 
   @NotNull

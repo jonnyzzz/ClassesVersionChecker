@@ -2,6 +2,8 @@ package jetbrains.buildServer.tools.test;
 
 import jetbrains.buildServer.tools.ErrorKind;
 import jetbrains.buildServer.tools.ScanFile;
+import jetbrains.buildServer.tools.java.JavaVersion;
+import org.hamcrest.core.IsAnything;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
@@ -204,9 +206,12 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
   }
 
   @Test
-  public void test_all_9() throws IOException {
-    writeAllVersionClasses();
-    runTest("9 =>");
+  public void test_all_versions() throws IOException {
+    for (JavaVersion v: JavaVersion.values()) {
+      File f = writeVersionClass(v.getClassVersion());
+      runTest(v.getShortName() + " =>");
+      f.delete();
+    }
   }
 
   @Test
@@ -344,6 +349,11 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
     saveFile("48.class", classBytes(48)); //1.4
     saveFile("47.class", classBytes(47)); //1.3
     saveFile("46.class", classBytes(46)); //1.2
+  }
+
+  @NotNull
+  private File writeVersionClass(int classVersion) throws IOException {
+    return saveFile(classVersion + ".class", classBytes(classVersion));
   }
 
   protected abstract void runTest(@NotNull String config) throws IOException;

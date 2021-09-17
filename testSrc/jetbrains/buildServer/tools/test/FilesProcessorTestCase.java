@@ -131,6 +131,14 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
     runTest("1.8 =>");
   }
 
+  @Test
+  public void test_ignore_meta_inf_versions_classes() throws IOException {
+    expectNoErrors();
+
+    writeZipWithMetaInfVersionsClasses();
+    runTest("1.8 =>");
+  }
+
   private void expectNoErrors() {
     m.checking(new Expectations(){{
       never(rep).postCheckError(with(any(ScanFile.class)), with(any(ErrorKind.class)), with(any(String.class)));
@@ -162,6 +170,18 @@ public abstract class FilesProcessorTestCase extends RulesBaseTestCase {
                             file("someOther", "Kino Rulezz".getBytes())
                     ),
                     classBytes("a/b/c/d/module-info.class", 56) // java 12
+            )
+    );
+  }
+
+  private void writeZipWithMetaInfVersionsClasses() throws IOException {
+    saveFile("foo.zip",
+            zipStream(
+                    zipStream("a/zipInZip.jar",
+                            classBytes("META-INF/versions/11/org/something/File.class", 55),
+                            classBytes("META-INF/versions/12/org/something/File.class", 56),
+                            classBytes("a/b/c/d/File.class", 52) // java 8
+                    )
             )
     );
   }

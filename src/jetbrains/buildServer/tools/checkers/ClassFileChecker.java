@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
  */
 public class ClassFileChecker implements CheckAction {
   private final static Pattern MODULE_INFO_CLASS = Pattern.compile("[!/]module-info.class");
+  private final static Pattern JVM_VERSION_SPECIFIC_CLASSES = Pattern.compile("[!/]META-INF/versions/[0-9]+/");
 
   private final JavaVersion myVersion;
 
@@ -44,6 +45,12 @@ public class ClassFileChecker implements CheckAction {
   public void process(@NotNull ScanFile file, @NotNull ErrorReporting reporting) throws IOException {
     // there is no reason to scan module-info.class because it will be loaded only by corresponding JVM version
     if (MODULE_INFO_CLASS.matcher(file.getName()).find()) {
+      return;
+    }
+
+    // many jars have JVM version specific classes under META-INF, it does not mean these jars can't be used with older versions of Java,
+    // so let's not report them as incompatible
+    if (JVM_VERSION_SPECIFIC_CLASSES.matcher(file.getName()).find()) {
       return;
     }
     checkVersion(file, reporting);
